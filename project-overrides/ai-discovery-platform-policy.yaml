@@ -149,9 +149,42 @@ bug_rules:
     - High
   bug_id_format: "БАГ-ЭПИК-{epic_number}-{sequence}"
 
+qa_automation_gate_rules:
+  enabled: true
+  qa_gate_owner: ai-qa-engineer
+  test_automation_owner: ai-test-automation-engineer
+  automation_first_for_existing_functionality: true
+  manual_regression_requires_autotests_first: true
+  block_QA_pass_if_required_autotests_failed: true
+  block_QA_pass_if_required_autotests_missing_without_exception: true
+  allow_manual_testing_after_failed_autotests_only_for:
+    - defect_confirmation
+    - evidence_collection
+    - exploratory_analysis
+  simple_retriever_required_before_manual_QA:
+    - unit
+    - integration
+    - regression
+  backend_API_changes_required_before_manual_QA:
+    - unit
+    - integration
+    - API
+    - regression
+  frontend_existing_flow_changes_required_before_manual_QA:
+    - unit
+    - integration
+    - e2e
+    - regression
+  exception_requires:
+    - ai-product-orchestrator
+    - ai-qa-engineer
+  release_exception_requires:
+    - ai-release-manager
+
 test_automation_rules:
   owner: ai-test-automation-engineer
   qa_gate_owner: ai-qa-engineer
+  governed_by_qa_automation_gate_rules: true
   can_modify_test_code: true
   can_modify_production_code: false
   allowed_test_types:
@@ -169,9 +202,12 @@ test_automation_rules:
     - unit
     - integration
     - regression
+  manual_QA_for_existing_functionality_requires_qa_automation_gate: true
   notes:
     - "Для AI Discovery Platform ai-test-automation-engineer отвечает за автотесты backend/frontend/API/e2e."
     - "QA gate и закрытие багов остаются за ai-qa-engineer."
+    - "Для SimpleRetriever и backend/API изменений ручной QA разрешён только после unit/integration/regression тестов."
+    - "QA gate не может быть PASSED при failed required autotests."
 
 trello_rules:
   trello_owner: ai-trello-analyst

@@ -174,12 +174,29 @@ task_types:
     owner_agent: ai-qa-engineer
     contributor_agents: [ai-test-automation-engineer, ai-code-reviewer, ai-release-manager]
     required_approvals: [ai-qa-engineer]
-    required_input_artifacts: [acceptance_criteria]
-    output_artifacts: [test_plan, QA_gate]
+    required_input_artifacts: [acceptance_criteria, automated_test_results_if_existing_functionality_impacted]
+    required_preconditions: [relevant_autotests_checked_before_manual_regression]
+    output_artifacts: [test_plan, QA_gate, qa_automation_gate_report]
     allowed_actions: [validate_acceptance, create_bug_report]
-    blocked_actions: [change_scope, close_bug_without_verification]
+    blocked_actions: [change_scope, manual_regression_without_required_autotest_check, QA_gate_passed_with_failed_required_autotests, close_bug_without_QA_verification, ignore_failed_regression_tests]
     default_trello_list: "07 QA / проверка"
-    handoff_rules: "Блокеры идут orchestrator/release/security по типу."
+    handoff_rules:
+      - "ai-test-automation-engineer обязателен как contributor для regression testing, existing functionality impact, release readiness, API/backend/frontend behavior changes, bug fix verification и SimpleRetriever / LLM/RAG regression checks."
+      - "Если автотесты отсутствуют или упали, передать ai-test-automation-engineer."
+      - "QA gate остаётся за ai-qa-engineer."
+      - "Manual regression по старому функционалу разрешён только после AUTOTESTS_PASSED или documented exception."
+      - "Блокеры идут orchestrator/release/security по типу."
+    quality_gate_required: true
+  qa_automation_gate:
+    owner_agent: ai-qa-engineer
+    contributor_agents: [ai-test-automation-engineer, ai-backend-developer, ai-frontend-developer]
+    required_approvals: [ai-qa-engineer]
+    required_input_artifacts: [approved_task, acceptance_criteria, impacted_functionality, automated_test_results]
+    output_artifacts: [QA_gate_result, qa_automation_gate_report, bug_reports]
+    allowed_actions: [review_automated_test_results, request_autotest_run, run_approved_test_commands, perform_manual_testing_after_autotests_pass, create_bug_report]
+    blocked_actions: [pass_QA_gate_with_failed_required_autotests, skip_autotests_for_existing_functionality_without_approval, close_bug_without_verification, modify_test_code, modify_production_code]
+    default_trello_list: "07 QA / проверка"
+    handoff_rules: "QA gate принадлежит ai-qa-engineer; test code и анализ failed/flaky automation передаются ai-test-automation-engineer."
     quality_gate_required: true
   testing:
     owner_agent: ai-test-automation-engineer

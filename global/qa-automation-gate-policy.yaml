@@ -1,0 +1,108 @@
+policy_version: "1.0"
+owner_agent: ai-qa-engineer
+test_automation_owner_agent: ai-test-automation-engineer
+rule: "Перед ручным тестированием старого или существующего функционала ai-qa-engineer обязан проверить результаты релевантных автотестов."
+
+automation_first_QA_rule:
+  description: "Manual regression для существующего функционала начинается только после проверки релевантных automated test results."
+  applies_to:
+    - existing_functionality
+    - regression_testing
+    - bug_fix_verification
+    - release_readiness
+    - backend_API_frontend_behavior_changes
+    - SimpleRetriever_LLM_RAG_regression_checks
+  required_owner: ai-qa-engineer
+  required_contributor: ai-test-automation-engineer
+
+qa_validation_order_existing_functionality:
+  - identify_impacted_existing_functionality
+  - request_or_run_relevant_automated_tests
+  - review_automated_test_results
+  - block_manual_regression_if_required_autotests_failed
+  - perform_manual_regression_only_after_autotests_pass_or_exception_approved
+  - create_bug_reports_for_failures
+  - complete_QA_gate
+
+qa_validation_order_new_functionality:
+  - check_acceptance_criteria
+  - check_required_new_or_updated_tests
+  - request_or_run_relevant_automated_tests
+  - perform_manual_acceptance_testing
+  - perform_exploratory_testing_if_needed
+  - create_bug_reports_for_failures
+  - complete_QA_gate
+
+missing_autotests_rules:
+  ai_qa_engineer_must_record_risk: true
+  handoff_to: ai-test-automation-engineer
+  handoff_reason: "Создать или обновить релевантные автотесты."
+  QA_gate_allowed_status_without_tests: CONDITIONAL
+  conditional_requires_approval:
+    - ai-product-orchestrator
+  release_critical_missing_tests_result: BLOCKED
+  release_critical_exception_rule: "Отсутствие автотестов для release-critical функциональности блокирует release, если project policy явно не разрешает исключение."
+
+failed_autotests_rules:
+  manual_testing_does_not_replace_failed_autotests: true
+  required_report:
+    - bug_report
+    - flaky_test_report_if_flaky
+  QA_gate_cannot_be: PASSED
+  task_status:
+    - QA_FAILED
+    - BLOCKED
+    - BLOCKED_BY_AUTOTEST_FAILURE
+    - NEEDS_FIX
+    - NEEDS_TEST_AUTOMATION_REVIEW
+  flaky_failure_rule: "Если failure flaky, сначала создаётся flaky test report."
+  regression_failure_label: Regression
+  security_or_release_blocker_escalation:
+    security_owner: ai-security-engineer
+    release_owner: ai-release-manager
+
+manual_testing_exceptions:
+  allowed_only_for:
+    - defect_confirmation
+    - exploratory_analysis
+    - evidence_collection
+    - temporary_exception_after_ai_product_orchestrator_and_ai_qa_engineer_approval
+    - release_exception_after_ai_release_manager_approval_if_release_impact
+  cannot_result_in_QA_gate_pass: true
+
+qa_automation_gate_statuses:
+  - AUTOTESTS_REQUIRED
+  - AUTOTESTS_NOT_FOUND
+  - AUTOTESTS_PASSED
+  - AUTOTESTS_FAILED
+  - AUTOTESTS_FLAKY
+  - MANUAL_TESTING_ALLOWED
+  - MANUAL_TESTING_BLOCKED
+  - QA_GATE_PASSED
+  - QA_GATE_FAILED
+  - QA_GATE_CONDITIONAL
+  - NEEDS_TEST_AUTOMATION_REVIEW
+
+output_format:
+  qa_automation_gate:
+    required: true
+    impacted_existing_functionality: []
+    required_test_types:
+      - unit
+      - integration
+      - API
+      - e2e
+      - regression
+    test_commands: []
+    test_results_source: ""
+    tests_passed: 0
+    tests_failed: 0
+    tests_skipped: 0
+    flaky_tests: []
+    missing_tests: []
+    manual_testing_allowed: false
+    manual_testing_block_reason: ""
+    required_handoff:
+      next_agent: ai-test-automation-engineer
+      reason: ""
+    QA_gate_status: ""

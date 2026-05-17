@@ -15,3 +15,11 @@
 13. `ai-qa-engineer` принимает QA gate и проверяет баги.
 14. Test automation не равен QA approval: успешный прогон автотестов не закрывает QA gate без `ai-qa-engineer`.
 15. Release decision принимает `ai-release-manager`.
+
+## QA Automation Gate процесс
+
+Для существующего функционала действует порядок:
+
+`Code ready -> automated tests -> QA reviews test results -> manual testing -> QA gate`
+
+`ai-test-automation-engineer` пишет, поддерживает, запускает или описывает автотесты и передает `test_results` в QA. `ai-qa-engineer` проверяет результаты автотестов перед ручным regression testing. Если required autotests failed, ручное тестирование может продолжаться только для defect confirmation, exploratory analysis или evidence collection, но QA gate не может быть `PASSED`.

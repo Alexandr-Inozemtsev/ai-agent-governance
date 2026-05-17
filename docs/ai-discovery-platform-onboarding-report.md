@@ -65,8 +65,12 @@
 - Агент отвечает за автотесты backend/frontend/API/e2e.
 - QA gate остается за `ai-qa-engineer`.
 - Для `SimpleRetriever` автотесты должны покрывать unit, integration и regression сценарии.
+- Для `SimpleRetriever` и backend/API изменений ручной QA разрешён только после unit/integration/regression тестов.
+- Для backend/API изменений перед manual QA требуются unit, integration, API и regression results.
 - Failed tests могут создавать bug report, но `ai-test-automation-engineer` не закрывает bug.
 - Если failed test связан с flaky behavior, сначала создается flaky test report.
+- QA gate не может быть `PASSED` при failed required autotests.
+- Если required autotests отсутствуют, нужен handoff к `ai-test-automation-engineer`; conditional QA gate возможен только по exception от `ai-product-orchestrator` и `ai-qa-engineer`, а для release impact также от `ai-release-manager`.
 
 ## Как запускать preflight
 

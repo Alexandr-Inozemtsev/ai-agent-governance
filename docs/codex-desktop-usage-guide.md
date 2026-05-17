@@ -27,3 +27,9 @@ QA использует `prompt-templates/bug-report-template.md`. Trello bug ca
 ## Как запускать test automation
 
 Для задач вида "добавь автотесты", "обнови e2e", "проверь coverage" или "разбери flaky test" preflight должен выбирать `task_type: test_automation` и owner `ai-test-automation-engineer`. Результат автотестов передается `ai-qa-engineer`; сам test automation не закрывает QA gate и не закрывает bugs.
+
+## Как запускать QA Automation Gate
+
+Перед ручным тестированием старого функционала сначала прогнать или проверить релевантные автотесты. Например: "Перед ручным regression Problem generation проверь unit/integration/regression результаты SimpleRetriever; если failed или missing, не ставь QA gate PASSED и передай `ai-test-automation-engineer`."
+
+`ai-qa-engineer` может продолжить ручную проверку при failed autotests только для defect confirmation, evidence collection или exploratory analysis. Такой результат не закрывает QA gate.

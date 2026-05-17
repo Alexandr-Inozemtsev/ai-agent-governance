@@ -171,10 +171,14 @@ agents:
     can_trigger_deploy: "conditional: release policy allows"
     can_change_dependencies: "conditional: approval"
   ai-qa-engineer:
-    allowed_skills: [test-strategy, test-cases, test-automation-planning, acceptance-validation, defect-analysis, bug-reporting, regression-analysis, QA-gate]
-    denied_skills: [product-scope-change, feature-implementation, release-deploy, final-backlog]
-    conditional_skills: [trello-bug-card-creation-if-project-policy-allows]
-    allowed_artifacts: [test_plan, test_case, bug_report, QA_gate_result]
+    allowed_skills: [test-strategy, test-cases, test-automation-planning, acceptance-validation, defect-analysis, bug-reporting, regression-analysis, QA-gate, automated-test-result-review, QA-automation-gate, regression-test-gate, manual-regression-after-autotests, bug-verification, QA-gate-decision]
+    denied_skills: [product-scope-change, feature-implementation, release-deploy, final-backlog, skip-autotests-before-manual-regression, pass-QA-gate-with-failed-required-autotests, modify-test-code, modify-production-code, close-bug-without-verification]
+    conditional_skills:
+      - trello-bug-card-creation-if-project-policy-allows
+      - "run-approved-test-commands: allowed, если команда уже описана project policy / test automation plan и не меняет код/CI"
+      - "request-test-automation-update: allowed через handoff к ai-test-automation-engineer"
+      - "continue-manual-testing-after-autotest-failure: allowed только для defect confirmation / evidence collection, но не для QA pass"
+    allowed_artifacts: [test_plan, test_case, bug_report, QA_gate_result, qa_automation_gate_report]
     denied_artifacts: [production_code_patch, final_backlog, release_deploy]
     allowed_actions: [create_bug_report, verify_fix, block_QA_gate]
     blocked_actions: [change_scope, close_epic, close_bug_without_verification, implement_feature]
@@ -256,6 +260,15 @@ agents:
       - production_deploy_plan
     allowed_actions: [write_unit_tests, write_integration_tests, write_API_tests, write_e2e_tests, create_mocks, create_fixtures, run_tests, report_defects, analyze_coverage, analyze_flaky_tests]
     blocked_actions: [product_scope_change, QA_gate_final_approval, release_decision, production_deploy, Trello_mutation, close_bug_without_QA_verification, change_dependencies, approve_database_migration]
+    responsibility_rules:
+      - "Создаёт и обновляет автотесты."
+      - "Запускает или описывает команды запуска автотестов."
+      - "Анализирует failed/flaky tests."
+      - "Создаёт bug report по failed automation."
+      - "Обновляет mocks, fixtures и regression suites."
+      - "Передаёт test_results ai-qa-engineer."
+      - "Не принимает QA gate."
+      - "Не закрывает bug."
     can_modify_code: conditional
     can_modify_test_code: true
     can_modify_production_code: false

@@ -92,3 +92,32 @@ test_automation_result:
     next_agent: ai-qa-engineer
     reason: "QA gate / defect verification"
 ```
+
+## Дополнительные поля для QA Automation Gate
+
+```yaml
+qa_automation_gate:
+  status: "AUTOTESTS_REQUIRED | AUTOTESTS_NOT_FOUND | AUTOTESTS_PASSED | AUTOTESTS_FAILED | AUTOTESTS_FLAKY | MANUAL_TESTING_ALLOWED | MANUAL_TESTING_BLOCKED | QA_GATE_PASSED | QA_GATE_FAILED | QA_GATE_CONDITIONAL | NEEDS_TEST_AUTOMATION_REVIEW"
+  existing_functionality_impacted: true
+  impacted_areas: []
+  required_test_types: []
+  test_commands: []
+  test_results:
+    passed: 0
+    failed: 0
+    skipped: 0
+    warnings: []
+  failed_tests: []
+  flaky_tests: []
+  missing_tests: []
+  manual_testing_started: false
+  manual_testing_allowed: false
+  manual_testing_block_reason: ""
+  bug_reports_created: []
+  required_handoff:
+    next_agent: ""
+    reason: ""
+  QA_gate_decision: ""
+  QA_gate_owner: ai-qa-engineer
+  test_automation_owner: ai-test-automation-engineer
+```

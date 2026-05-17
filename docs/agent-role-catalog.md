@@ -11,7 +11,7 @@
 - `ai-database-engineer`: schema, migration plan, rollback. Не меняет БД без plan.
 - `ai-llm-rag-engineer`: RAG, prompts, retrieval, source trace. Не включает external SaaS без security review.
 - `ai-security-engineer`: security review, secrets policy, prompt injection, privacy. Может блокировать task.
-- `ai-qa-engineer`: QA strategy, test cases, bug reports, verification. Не меняет scope и code.
+- `ai-qa-engineer`: QA strategy, test cases, ручное acceptance/regression/exploratory testing, QA gate, bug reports, verification. Перед ручным regression существующего функционала проверяет релевантные автотесты. Не меняет scope и code.
 - `ai-test-automation-engineer`: автотесты unit/integration/API/e2e, mocks, fixtures, regression suites, flaky test analysis, CI test commands и coverage analysis. Не принимает QA gate и не закрывает bugs.
 - `ai-trello-analyst`: Trello cards, labels, checklists. Не определяет product scope.
 - `ai-release-manager`: release decision, rollout, rollback. Не реализует features.
@@ -31,6 +31,10 @@
 `ai-qa-engineer` отвечает за QA strategy, test plan, acceptance validation, QA gates, bug reports, defect verification и regression decision. Этот агент может блокировать release по QA gate и подтверждает закрытие bugs.
 
 `ai-test-automation-engineer` реализует и поддерживает автотесты: unit, integration, API, e2e, mocks, fixtures, regression tests, test automation infrastructure, flaky test analysis, CI test commands и coverage analysis. Он может создать bug report, если автоматизированный тест выявил дефект, но не закрывает bug без QA verification и не принимает QA gate.
+
+QA gate не равен test automation. `ai-test-automation-engineer` готовит и анализирует automated test results, а `ai-qa-engineer` использует эти результаты как вход в QA gate и только затем выполняет ручное тестирование там, где оно разрешено policy.
+
+Перед ручным тестированием старого или существующего функционала `ai-qa-engineer` обязан инициировать или проверить прогон релевантных автотестов. Если required autotests failed или отсутствуют без documented exception, QA gate не может быть `PASSED`.
 
 Разрешенные действия `ai-test-automation-engineer`:
 

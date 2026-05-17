@@ -61,6 +61,22 @@ test_automation_engineer_rules:
     - "Если failed test связан с flaky behavior, сначала создаётся flaky test report, а не product bug."
     - "Если failed test выявляет regression, bug должен иметь label Regression."
     - "Если bug найден в e2e/API/integration test и блокирует release, требуется ai-release-manager review."
+failed_automation_before_manual_testing:
+  qa_engineer_must_classify_result_as:
+    - product_bug
+    - regression_bug
+    - flaky_test
+    - test_data_issue
+    - environment_issue
+  product_or_regression_bug_must_link_to:
+    - parent_epic
+    - parent_task
+    - PR
+    - test_case
+  flaky_test_rule: "Flaky test сначала оформляется как flaky test report."
+  bug_found_by_failed_automation_closure_rule: "Bug, найденный через failed automation, не закрывается без QA verification."
+  failed_automation_blocks_existing_functionality_result: "Parent epic/task не может быть Done."
+  regression_bug_before_release_requires: ai-release-manager_review
 scope_change_rule:
   triggers:
     - new_feature

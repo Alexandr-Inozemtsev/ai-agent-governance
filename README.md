@@ -11,6 +11,7 @@ Governance не должен жить внутри product repo, потому ч
 - `global/agent-registry.yaml` — реестр ролей и зон владения.
 - `global/agent-skill-policy.yaml` — матрица skills, permissions и запретов.
 - `global/agent-routing-policy.yaml` — маршрутизация task types.
+- `global/qa-automation-gate-policy.yaml` — automation-first QA gate перед ручным regression существующего функционала.
 - `global/blocked-actions.yaml` — глобальные блокировки.
 - `global/bug-policy.yaml` — правила bug reports и Trello bug cards.
 - `project-overrides/project-policy-template.yaml` — шаблон подключения проекта.
@@ -18,6 +19,12 @@ Governance не должен жить внутри product repo, потому ч
 ## Глобальные агенты
 
 Пакет включает 21 глобального агента, включая отдельного `ai-test-automation-engineer` для автотестов. `ai-test-automation-engineer` отвечает за unit, integration, API, e2e, mocks, fixtures, regression suites, flaky test analysis, CI test commands и coverage analysis. QA gate и bug verification остаются у `ai-qa-engineer`.
+
+## QA Automation Gate
+
+Для старого или существующего функционала ручной regression начинается только после проверки релевантных автотестов: `Code ready -> automated tests -> QA reviews test results -> manual testing -> QA gate`.
+
+`ai-test-automation-engineer` пишет, поддерживает и анализирует автотесты, но не закрывает QA gate. `ai-qa-engineer` проверяет automated test results, выполняет ручное acceptance/regression/exploratory testing и принимает QA gate. Если required autotests failed или missing без documented exception, QA gate не может быть `PASSED`.
 
 ## Подключённые проекты
 

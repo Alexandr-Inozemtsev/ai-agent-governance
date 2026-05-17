@@ -55,9 +55,28 @@ bug_rules:
   requires_security_review_for_security_bug: true
   requires_release_review_for_release_blocker: true
 
+qa_automation_gate_rules:
+  enabled: true
+  qa_gate_owner: ai-qa-engineer
+  test_automation_owner: ai-test-automation-engineer
+  automation_first_for_existing_functionality: true
+  manual_regression_requires_autotests_first: true
+  block_QA_pass_if_required_autotests_failed: true
+  block_QA_pass_if_required_autotests_missing_without_exception: true
+  allow_manual_testing_after_failed_autotests_only_for:
+    - defect_confirmation
+    - evidence_collection
+    - exploratory_analysis
+  exception_requires:
+    - ai-product-orchestrator
+    - ai-qa-engineer
+  release_exception_requires:
+    - ai-release-manager
+
 test_automation_rules:
   owner: ai-test-automation-engineer
   qa_gate_owner: ai-qa-engineer
+  governed_by_qa_automation_gate_rules: true
   can_modify_test_code: true
   can_modify_production_code: false
   allowed_test_types:
