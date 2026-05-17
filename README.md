@@ -15,6 +15,12 @@ Governance не должен жить внутри product repo, потому ч
 - `global/bug-policy.yaml` — правила bug reports и Trello bug cards.
 - `project-overrides/project-policy-template.yaml` — шаблон подключения проекта.
 
+## Подключённые проекты
+
+| Проект | Repository | Domain policy | Project override | Статус |
+|---|---|---|---|---|
+| AI Discovery Platform | `Alexandr-Inozemtsev/AI-Discovery-Platform` | `domains/ai-rag-platform-policy.yaml` | `project-overrides/ai-discovery-platform-policy.yaml` | `READY_FOR_PREFLIGHT` |
+
 ## Inheritance
 
 Правила наследуются так:

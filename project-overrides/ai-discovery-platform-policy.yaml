@@ -1,0 +1,162 @@
+policy_version: "1.0"
+project_id: ai-discovery-platform
+project_name: "AI Discovery Platform"
+repository: "Alexandr-Inozemtsev/AI-Discovery-Platform"
+domain_policy: "domains/ai-rag-platform-policy.yaml"
+trello_board: "https://trello.com/b/AKdFcJsw/aidiscoveryplatform"
+rule: "Project override не может ослаблять global policy. Если project override конфликтует с global policy, побеждает global policy."
+
+allowed_agents:
+  - ai-product-orchestrator
+  - ai-trello-analyst
+  - ai-business-analyst
+  - ai-system-analyst
+  - ai-solution-architect
+  - ai-ui-ux-designer
+  - ai-frontend-developer
+  - ai-backend-developer
+  - ai-database-engineer
+  - ai-data-metrics-engineer
+  - ai-llm-rag-engineer
+  - ai-security-engineer
+  - ai-devops-engineer
+  - ai-qa-engineer
+  - ai-code-reviewer
+  - ai-release-manager
+  - ai-technical-writer
+  - ai-delivery-project-manager
+  - ai-performance-engineer
+  - ai-monetization-strategist
+disabled_agents: []
+
+allowed_skills_override:
+  allow_extra_skills: []
+  deny_extra_skills: []
+  note: "Extra allow требует approval ai-product-orchestrator и owner-агента соответствующей зоны, и не может нарушать global policy."
+
+blocked_actions_extra:
+  - "изменять production-код AI Discovery Platform без approved task"
+  - "изменять репозиторий AI Discovery Platform из governance-задачи"
+  - "изменять Trello-доску без ai-trello-analyst"
+  - "создавать GitHub issues или PR без отдельного approval"
+  - "добавлять новые зависимости без ADR, security review и license review"
+  - "отключать source_trace для AI-generated artifacts"
+  - "отправлять sensitive data во внешний LLM без project approval"
+
+approval_overrides:
+  stricter_only: true
+  scope_change_requires: ai-product-orchestrator
+  architecture_change_requires_adr: true
+  runtime_dependency_requires:
+    - ADR
+    - security_review
+    - license_review
+
+environment_rules:
+  production_changes_require_release_policy: true
+  production_code_changes_allowed_only_for_approved_task: true
+
+dependency_rules:
+  inherit_global_dependency_policy: true
+  new_runtime_dependencies: blocked_without_adr_security_license_review
+  stricter_licenses: []
+
+data_sensitivity:
+  classification: internal
+  external_LLM_allowed: false
+  sensitive_data_to_external_LLM: blocked_without_project_approval
+
+llm_provider_rules:
+  allowed_providers: []
+  external_LLM_allowed_only_via_project_settings: true
+  sensitive_data_to_external_LLM: blocked_without_project_approval
+
+code_change_rules:
+  requires_approved_task: true
+  requires_status_ready_for_development: true
+  required_task_status: "Готово к разработке"
+  docs_only_mode: false
+  backend_code_owner: ai-backend-developer
+  frontend_code_owner: ai-frontend-developer
+  database_and_migrations_owner: ai-database-engineer
+  database_and_migrations_require_migration_plan: true
+  architecture_changes_require_adr: true
+  new_runtime_dependencies_require:
+    - ADR
+    - security_review
+    - license_review
+  notes:
+    - "Код менять только при approved task."
+    - "Backend-код меняет только ai-backend-developer."
+    - "Frontend-код меняет только ai-frontend-developer."
+    - "БД и миграции меняет только ai-database-engineer при наличии migration plan."
+
+llm_rag_rules:
+  external_LLM_allowed_only_via_project_settings: true
+  sensitive_data_to_external_LLM_requires_project_approval: true
+  default_retriever: SimpleRetriever
+  default_retriever_requires_new_runtime_dependencies: false
+  llamaindex_allowed_later_only_via_adr: true
+  haystack_allowed_later_only_via_adr: true
+  langgraph_allowed_later_only_via_adr: true
+  dify_flowise_ragflow_are_foundation: false
+  source_trace_required_for_ai_generated_artifacts: true
+  required_artifacts:
+    - prompt_contract
+    - source_trace_rules
+    - retrieval_quality_metrics
+    - prompt_injection_risk_review
+
+documentation_rules:
+  language: ru
+  require_metadata: true
+
+release_rules:
+  inherit_global_release_policy: true
+
+bug_rules:
+  ai_qa_engineer_can_create_bug_report: true
+  ai_trello_analyst_creates_trello_bug_card: true
+  qa_can_create_trello_bug_card_directly: false
+  bug_card_requires_parent_epic: true
+  bug_card_requires_parent_task: false
+  parent_epic_must_have_bug_checklist: true
+  parent_epic_bug_checklist_name: "Баги / дефекты"
+  epic_card_must_track_open_bugs: true
+  block_epic_done_if_open_p0_p1_bugs: true
+  block_epic_done_if_open_critical_high_bugs: true
+  bug_cannot_close_without_qa_verification: true
+  requires_qa_verification_to_close: true
+  requires_orchestrator_confirmation_for_scope_change: true
+  requires_security_review_for_security_bug: true
+  requires_release_review_for_release_blocker: true
+  allowed_bug_lists:
+    - "07 QA / проверка"
+    - "09 Заблокировано"
+    - "Исправление багов"
+  required_bug_labels:
+    - "Баг"
+    - "QA"
+    - "LLM/RAG"
+    - "Backend"
+    - "Frontend"
+    - "Data"
+  blocking_severities:
+    - P0
+    - P1
+    - Critical
+    - High
+  bug_id_format: "БАГ-ЭПИК-{epic_number}-{sequence}"
+
+trello_rules:
+  trello_owner: ai-trello-analyst
+  only_ai_trello_analyst_can_change_trello: true
+  cards_created_only_from_approved_backlog: true
+  card_requires:
+    - parent_epic
+    - owner
+    - labels
+    - acceptance_criteria
+    - DoD
+  duplicate_cards_blocked: true
+  scope_change_requires: ai-product-orchestrator
