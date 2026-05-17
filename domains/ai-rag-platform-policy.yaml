@@ -1,0 +1,28 @@
+policy_version: "1.0"
+domain: ai_rag_platform
+inherits: global
+cannot_weaken_global_policy: true
+typical_owners:
+  llm_rag: ai-llm-rag-engineer
+  architecture: ai-solution-architect
+  security: ai-security-engineer
+  backend: ai-backend-developer
+  data_metrics: ai-data-metrics-engineer
+allowed_actions:
+  ai-llm-rag-engineer: [RAG_design, prompt_contract, retriever_design, source_trace_design, retrieval_eval]
+  ai-security-engineer: [prompt_injection_review, data_privacy_review, external_provider_review]
+blocked_actions:
+  - external_LLM_without_project_policy
+  - sensitive_data_to_external_LLM_without_approval
+  - RAG_dependency_without_ADR
+  - prompt_injection_bypass
+  - hallucination_control_ignored
+required_approvals:
+  external_LLM_provider: [ai-security-engineer, ai-solution-architect]
+  embeddings_or_vector_store_dependency: [ai-solution-architect, ai-security-engineer]
+  source_trace_change: [ai-llm-rag-engineer, ai-qa-engineer]
+required_artifacts:
+  - prompt_contract
+  - source_trace_rules
+  - retrieval_quality_metrics
+  - prompt_injection_risk_review

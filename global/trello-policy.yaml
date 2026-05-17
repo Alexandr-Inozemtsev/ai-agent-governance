@@ -1,0 +1,24 @@
+policy_version: "1.0"
+owner_agent: ai-trello-analyst
+scope_owner_agent: ai-product-orchestrator
+rules:
+  - "Trello меняет только ai-trello-analyst, кроме project-policy исключений."
+  - "Карточки создаются только из approved backlog."
+  - "Карточка должна иметь owner, labels, acceptance criteria, DoD, dependencies."
+  - "Нельзя создавать дубли."
+  - "Нельзя менять scope карточки без ai-product-orchestrator."
+  - "Нельзя двигать карточку в 'Готово к разработке' без acceptance criteria."
+  - "Нельзя двигать карточку в 'Готово' без QA/Review."
+  - "Bug card создается только с parent epic/task/PR/incident."
+  - "Parent epic checklist 'Баги / дефекты' должен обновляться."
+  - "Нельзя закрыть epic card, если есть открытые P0/P1/Critical/High bugs."
+  - "Нельзя закрыть bug card без QA verification."
+  - "Если баг уже существует, нужно обновить существующую карточку, а не создавать новую."
+card_required_fields:
+  - owner
+  - labels
+  - acceptance_criteria
+  - definition_of_done
+  - dependencies
+bug_card_required_parent: [epic, task, PR, incident]
+duplicate_policy: update_existing_card

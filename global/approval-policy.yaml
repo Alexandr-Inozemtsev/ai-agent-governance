@@ -1,0 +1,44 @@
+policy_version: "1.0"
+approval_matrix:
+  backlog:
+    approver: ai-product-orchestrator
+    required_inputs: [BT_or_scope_context, TZ_or_task_context]
+  roadmap:
+    approver: ai-product-orchestrator
+    contributors: [ai-delivery-project-manager, ai-release-manager]
+  ADR:
+    approver: ai-solution-architect
+    required_reviews: [ai-security-engineer_if_security_or_dependency, ai-devops-engineer_if_runtime_or_deploy]
+  BT:
+    owner: ai-business-analyst
+    approver: ai-product-orchestrator
+  TZ:
+    owner: ai-system-analyst
+    approver: ai-product-orchestrator
+  security_review:
+    approver: ai-security-engineer
+  QA_strategy:
+    approver: ai-qa-engineer
+  dependency_update:
+    approver: ai-solution-architect
+    required_reviews: [ai-security-engineer]
+    required_artifacts: [ADR, license_review, rollback_plan]
+  DB_migration:
+    approver: ai-database-engineer
+    required_reviews: [ai-solution-architect, ai-release-manager]
+    required_artifacts: [migration_plan, rollback_plan]
+  release:
+    approver: ai-release-manager
+    required_reviews: [ai-qa-engineer, ai-security-engineer]
+  Trello_board_changes:
+    approver: ai-trello-analyst
+    required_scope_approval: ai-product-orchestrator
+  bug_scope_change:
+    approver: ai-product-orchestrator
+    required_decision: bug_fix_or_change_request
+  close_security_bug:
+    approver: ai-security-engineer
+    required_reviews: [ai-qa-engineer]
+  close_release_blocker:
+    approver: ai-release-manager
+    required_reviews: [ai-qa-engineer, ai-security-engineer_if_security]

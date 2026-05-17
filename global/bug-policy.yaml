@@ -1,0 +1,150 @@
+policy_version: "1.0"
+owner_agent: ai-qa-engineer
+trello_owner_agent: ai-trello-analyst
+scope_owner_agent: ai-product-orchestrator
+principles:
+  - "Баг не может существовать без связи с родительским объектом."
+  - "Баг плановой разработки должен быть связан с родительским эпиком."
+  - "Баг не должен превращаться в скрытую фичу без product review."
+  - "Баг нельзя закрыть без QA verification."
+  - "Эпик нельзя закрыть при открытых P0/P1/Critical/High bugs."
+allowed_parents:
+  - epic
+  - feature
+  - user_story
+  - task
+  - PR
+  - test_case
+  - release_candidate
+  - production_incident
+parent_rules:
+  planned_development_primary_parent: epic
+  production_incident_primary_parent: incident_or_release_or_hotfix
+  missing_parent_result: BLOCKED_BY_AGENT_POLICY
+bug_id_formats:
+  planned_development: "БАГ-ЭПИК-{epic_number}-{sequence}"
+  planned_examples: ["БАГ-ЭПИК-04-001", "БАГ-ЭПИК-11-003", "БАГ-ЭПИК-15-002"]
+  production_incident: "ИНЦ-БАГ-YYYYMMDD-NNN"
+qa_engineer_permissions:
+  can_create_bug_report: true
+  can_identify_defects: true
+  can_set_parent_epic: true
+  can_set_parent_task: true
+  can_set_affected_area: true
+  can_set_severity: true
+  can_set_priority: true
+  can_set_environment: true
+  can_set_reproduction_steps: true
+  can_set_actual_expected: true
+  can_attach_evidence: true
+  can_set_regression_risk: true
+  can_propose_trello_bug_card: true
+  can_block_QA_gate: true
+  cannot_change_product_scope: true
+scope_change_rule:
+  triggers:
+    - new_feature
+    - changed_requirement
+    - changed_business_logic
+    - changed_UX_scope
+    - behavior_not_in_acceptance_criteria
+  status: NEEDS_PRODUCT_REVIEW
+  owner: ai-product-orchestrator
+  required_decision: bug_fix_or_change_request
+trello_bug_card_modes:
+  strict_mode:
+    description: "QA создает bug report, orchestrator подтверждает связь со scope, ai-trello-analyst создает Trello bug card."
+    qa_can_create_trello_bug_card: false
+    trello_owner: ai-trello-analyst
+  fast_mode:
+    description: "QA может создать Trello bug card только если project policy явно разрешает."
+    qa_can_create_trello_bug_card: "conditional: project policy can_create_trello_bug_cards=true"
+    required_parent_epic: true
+    allowed_lists_required: true
+    approved_template_required: true
+trello_bug_card_required_fields:
+  - bug_id
+  - title
+  - parent_epic_id
+  - parent_epic_title
+  - parent_feature_id
+  - parent_task_id
+  - affected_area
+  - severity
+  - priority
+  - environment
+  - steps_to_reproduce
+  - actual_result
+  - expected_result
+  - evidence
+  - regression_risk
+  - owner_agent
+  - linked_task
+  - linked_pr
+  - linked_test_case
+  - acceptance_criteria_for_fix
+  - definition_of_done
+parent_epic_tracking:
+  checklist_name: "Баги / дефекты"
+  required_update_when_bug_card_created: true
+  required_items: [bug_card_link_or_title, bug_status]
+  block_done_if_open:
+    severity: [Critical, High]
+    priority: [P0, P1]
+    other: [security_blocker, failed_acceptance_criteria]
+severity:
+  Critical: "Система не работает, потеря данных, security breach, production blocker."
+  High: "Ключевая функция не работает."
+  Medium: "Функция работает частично или есть обходной путь."
+  Low: "Minor issue, UI/wording/cosmetic."
+priority:
+  P0: "Исправить немедленно."
+  P1: "Исправить до закрытия эпика/release."
+  P2: "Исправить в плановом порядке."
+  P3: "Можно отложить."
+bug_closure_required:
+  - fix_implemented
+  - test_added_or_updated
+  - QA_verification_passed
+  - regression_risk_assessed
+  - affected_epic_checklist_updated
+  - linked_Trello_card_updated
+  - release_notes_updated_if_needed
+required_trello_labels:
+  - "Баг"
+  - "QA"
+  - "ЭПИК-{epic_number}"
+  - "Severity:{severity}"
+  - "Priority:{priority}"
+  - "Area:{affected_area}"
+default_trello_bug_lists:
+  - "07 QA / проверка"
+  - "09 Заблокировано"
+project_policy_may_add_lists:
+  - "Баги"
+  - "Исправление багов"
+  - "Hotfix"
+  - "Regression"
+bug_report_contract:
+  bug_id: string
+  title: string
+  parent_epic_id: string
+  parent_epic_title: string
+  parent_task_id: string
+  parent_task_title: string
+  severity: Critical|High|Medium|Low
+  priority: P0|P1|P2|P3
+  affected_area: Backend|Frontend|LLM/RAG|Data|Security|DevOps|UX|Docs|Other
+  environment: string
+  steps_to_reproduce: list
+  actual_result: string
+  expected_result: string
+  evidence: list
+  regression_risk: Low|Medium|High
+  linked_pr: string
+  linked_test_case: string
+  recommended_owner_agent: string
+  blocks_epic_completion: boolean
+  requires_product_review: boolean
+  requires_security_review: boolean
+  requires_release_review: boolean

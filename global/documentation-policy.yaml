@@ -1,0 +1,19 @@
+policy_version: "1.0"
+owner_agent: ai-technical-writer
+rules:
+  - "Архитектурные решения фиксируются через ADR и owner ai-solution-architect."
+  - "БТ формирует ai-business-analyst."
+  - "ТЗ формирует ai-system-analyst."
+  - "Пользовательские инструкции формирует ai-technical-writer."
+  - "Документация должна быть на русском языке, если проект русскоязычный."
+  - "Технические имена файлов, классов, агентов, skills и системных сущностей можно оставлять на английском."
+  - "Документация должна содержать дату, статус, owner, scope, связанные эпики."
+  - "Bug reports должны храниться или ссылаться из документации проекта, если project policy требует."
+required_metadata:
+  - date
+  - status
+  - owner
+  - scope
+  - related_epics
+docs_only_rule:
+  production_code_changes: blocked

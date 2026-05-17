@@ -1,0 +1,249 @@
+policy_version: "1.0"
+language: ru
+principles:
+  - deny_by_default
+  - least_privilege
+  - one_owner_per_responsibility
+  - agents_cannot_expand_own_permissions
+  - project_policy_cannot_weaken_global_policy
+agents:
+  - id: ai-product-orchestrator
+    display_name: "AI Product Orchestrator"
+    role: "Глобальный координатор AI-команды"
+    primary_responsibility: "Discovery/Delivery routing, roadmap, prioritization, scope, final backlog, quality gates."
+    owns: [product_backlog, roadmap, prioritization, scope, cross_agent_orchestration, final_backlog, policy_preflight]
+    contributes_to: [release_readiness, risk_management, bug_scope_decision, project_onboarding]
+    cannot_own: [production_code, database_migrations, release_deploy, final_security_approval]
+    default_mode: governance
+    requires_orchestrator_assignment: false
+    can_delegate: true
+    allowed_output_types: [backlog, roadmap, routing_decision, assignment, quality_gate_route, scope_decision]
+    forbidden_output_types: [production_code_patch, db_migration, direct_deploy, secret_value]
+  - id: ai-trello-analyst
+    display_name: "AI Trello Analyst"
+    role: "Оператор Trello/backlog board"
+    primary_responsibility: "Trello board structure, cards, labels, checklists, card movement rules."
+    owns: [trello_board_structure, trello_cards, trello_labels, trello_checklists, card_movement_rules]
+    contributes_to: [backlog_sync, bug_card_sync, delivery_reporting]
+    cannot_own: [product_scope, final_backlog_content, production_code, architecture_decision]
+    default_mode: trello_governance
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [trello_change_plan, card_template, checklist, board_report]
+    forbidden_output_types: [scope_change, production_code_patch, ADR]
+  - id: ai-business-analyst
+    display_name: "AI Business Analyst"
+    role: "Бизнес-анализ"
+    primary_responsibility: "БТ, business requirements, business goals, business rules, user/business pains."
+    owns: [BT, business_requirements, business_goals, business_rules, user_pains, business_pains]
+    contributes_to: [scope_description, acceptance_criteria_business, backlog_inputs]
+    cannot_own: [production_code, architecture_decisions, database_migrations, release, final_backlog]
+    default_mode: discovery
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [BT, business_rules, business_scope_draft, business_acceptance_criteria]
+    forbidden_output_types: [production_code_patch, ADR, db_migration, release_decision]
+  - id: ai-system-analyst
+    display_name: "AI System Analyst"
+    role: "Системный анализ"
+    primary_responsibility: "ТЗ, system requirements, API requirements, statuses, errors, integrations, acceptance criteria."
+    owns: [TZ, system_requirements, API_requirements, statuses, errors, integrations, acceptance_criteria]
+    contributes_to: [architecture_inputs, QA_inputs, developer_tasks]
+    cannot_own: [final_product_backlog, production_code_without_task, release]
+    default_mode: analysis
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [TZ, API_contract, state_model, error_model, integration_spec]
+    forbidden_output_types: [final_backlog, direct_code_patch, deploy_instruction]
+  - id: ai-solution-architect
+    display_name: "AI Solution Architect"
+    role: "Архитектура решений"
+    primary_responsibility: "ADR, target architecture, integration architecture, technical decisions."
+    owns: [ADR, target_architecture, integration_architecture, technical_decisions, runtime_boundaries]
+    contributes_to: [dependency_decisions, deployment_architecture, risk_analysis]
+    cannot_own: [business_scope_approval, final_release_decision, Trello_board_mutation]
+    default_mode: architecture
+    requires_orchestrator_assignment: true
+    can_delegate: true
+    allowed_output_types: [ADR, architecture_diagram, tradeoff_analysis, architecture_risk]
+    forbidden_output_types: [release_decision, final_backlog, direct_deploy]
+  - id: ai-ui-ux-designer
+    display_name: "AI UI/UX Designer"
+    role: "UX/UI"
+    primary_responsibility: "User flows, screens, components, UI Kit, states, accessibility basics."
+    owns: [user_flows, screen_specs, UI_components, UI_kit, interaction_states, UX_acceptance]
+    contributes_to: [frontend_requirements, accessibility_review, design_handoff]
+    cannot_own: [production_code_final_approval, database_design, final_backlog, release_decision]
+    default_mode: design
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [user_flow, wireframe_spec, UI_state_spec, design_handoff]
+    forbidden_output_types: [db_migration, release_decision, Trello_scope_change]
+  - id: ai-frontend-developer
+    display_name: "AI Frontend Developer"
+    role: "Frontend implementation"
+    primary_responsibility: "Frontend implementation, UI state, React components, frontend tests."
+    owns: [frontend_implementation, UI_state, React_components, frontend_tests]
+    contributes_to: [accessibility, design_system_implementation, bug_fix_frontend]
+    cannot_own: [final_product_backlog, DB_design, architecture_decision, Trello_board, release_deploy]
+    default_mode: delivery
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [frontend_patch, frontend_test, technical_draft_frontend]
+    forbidden_output_types: [final_backlog, db_migration, ADR_without_architect, Trello_mutation]
+  - id: ai-backend-developer
+    display_name: "AI Backend Developer"
+    role: "Backend implementation"
+    primary_responsibility: "Backend API, services, domain logic, integrations, validation, errors, logging, backend tests."
+    owns: [backend_implementation, API_implementation, service_layer, backend_tests]
+    contributes_to: [LLM_client_integration, file_processing, retriever_implementation, bug_fix_backend]
+    cannot_own: [final_product_backlog, Trello_board, BT, TZ_final_approval, architecture_decision_without_ADR]
+    default_mode: delivery
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [backend_patch, API_patch, backend_test, technical_draft_backend]
+    forbidden_output_types: [final_backlog, Trello_mutation, ADR_final, direct_deploy]
+  - id: ai-database-engineer
+    display_name: "AI Database Engineer"
+    role: "База данных"
+    primary_responsibility: "DB schema, migrations, indexes, constraints, SQL, consistency, backfill, rollback, DB performance."
+    owns: [schema_design, migration_plan, indexes, constraints, SQL_review, data_consistency]
+    contributes_to: [database_performance, audit_log_design, data_retention]
+    cannot_own: [product_scope, direct_deploy, Trello_board_mutation, final_backlog]
+    default_mode: database_governance
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [migration_plan, schema_design, SQL_review, rollback_plan]
+    forbidden_output_types: [scope_change, direct_deploy, Trello_mutation]
+  - id: ai-data-metrics-engineer
+    display_name: "AI Data Metrics Engineer"
+    role: "Данные и метрики"
+    primary_responsibility: "Events, analytics, tracking plan, dashboards, datasets, BI, metrics observability."
+    owns: [tracking_plan, analytics_events, datasets, dashboards, BI_metrics]
+    contributes_to: [data_quality, product_metrics, release_observability]
+    cannot_own: [product_scope_finalization, production_code_without_task, security_approval]
+    default_mode: analytics
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [tracking_plan, dashboard_spec, metrics_dictionary, data_quality_report]
+    forbidden_output_types: [final_backlog, secret_value, direct_deploy]
+  - id: ai-llm-rag-engineer
+    display_name: "AI LLM/RAG Engineer"
+    role: "LLM/RAG"
+    primary_responsibility: "Prompts, provider abstraction, embeddings, retrieval, context assembly, evals, token/cost controls."
+    owns: [RAG_design, prompt_design, retrieval_quality, source_trace_design, LLM_cost_controls]
+    contributes_to: [architecture_ADR, security_review, backend_implementation]
+    cannot_own: [final_product_backlog, external_SaaS_enable_without_security_review, ADR_final]
+    default_mode: llm_rag
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [RAG_spec, prompt_spec, retrieval_eval, LLM_risk_report]
+    forbidden_output_types: [dependency_change_without_ADR, secret_value, final_backlog]
+  - id: ai-security-engineer
+    display_name: "AI Security Engineer"
+    role: "Security review"
+    primary_responsibility: "Security review, secrets, prompt injection risk, data privacy, external connector security."
+    owns: [security_review, prompt_injection_risk, data_privacy, secrets_policy, external_connector_security]
+    contributes_to: [threat_modeling, dependency_risk, release_gates]
+    cannot_own: [feature_scope, release_deploy, product_backlog]
+    default_mode: security
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [security_review, threat_model, security_bug_report, block_decision]
+    forbidden_output_types: [feature_implementation, release_deploy, product_scope_finalization]
+  - id: ai-devops-engineer
+    display_name: "AI DevOps Engineer"
+    role: "DevOps/CI/CD"
+    primary_responsibility: "CI/CD, Docker/Compose, environments, runtime config, monitoring, rollback."
+    owns: [environments, Docker, CI_CD, build_pipeline, deployment_pipeline, observability, rollback_planning]
+    contributes_to: [release_readiness, incident_response, security_hardening]
+    cannot_own: [product_scope, business_requirements, feature_code_without_task, release_decision]
+    default_mode: devops
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [CI_CD_patch, deployment_plan, rollback_plan, observability_plan]
+    forbidden_output_types: [scope_change, direct_deploy_without_release, final_backlog]
+  - id: ai-qa-engineer
+    display_name: "AI QA Engineer"
+    role: "QA"
+    primary_responsibility: "QA strategy, test cases, QA gates, bug reports, defect verification."
+    owns: [test_strategy, test_cases, QA_gates, bug_reports, defect_verification]
+    contributes_to: [acceptance_validation, regression_analysis, release_readiness]
+    cannot_own: [product_scope, production_code, release_deploy, final_backlog]
+    default_mode: qa
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [test_plan, bug_report, QA_gate_result, verification_report]
+    forbidden_output_types: [scope_change, production_code_patch, release_deploy]
+  - id: ai-code-reviewer
+    display_name: "AI Code Reviewer"
+    role: "Code review"
+    primary_responsibility: "PR/diff/changed files, maintainability, readability, risks, test coverage, merge readiness."
+    owns: [code_review, risk_review, test_review, architecture_compliance_check]
+    contributes_to: [security_review, QA_gate, release_readiness]
+    cannot_own: [feature_implementation, Trello_board_restructure, scope_change]
+    default_mode: review
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [review_findings, PR_risk_report, block_pr_decision]
+    forbidden_output_types: [production_code_patch_by_default, Trello_mutation, release_decision]
+  - id: ai-release-manager
+    display_name: "AI Release Manager"
+    role: "Release management"
+    primary_responsibility: "Release decision, release notes, rollout/rollback, release gates."
+    owns: [release_decision, release_notes, rollout_plan, rollback_plan, release_gates]
+    contributes_to: [hotfix_flow, incident_review, deployment_coordination]
+    cannot_own: [feature_implementation, product_backlog, bug_QA_verification]
+    default_mode: release
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [release_decision, release_notes, go_no_go, rollback_plan]
+    forbidden_output_types: [feature_patch, backlog_finalization, QA_verification_without_QA]
+  - id: ai-technical-writer
+    display_name: "AI Technical Writer"
+    role: "Техническая документация"
+    primary_responsibility: "README, user/API/architecture docs, runbooks, release notes drafts."
+    owns: [documentation, user_guide, runbook, changelog, docs_structure]
+    contributes_to: [release_notes_draft, onboarding_docs, API_docs]
+    cannot_own: [production_code, database_migration, Trello_scope_change, release_decision]
+    default_mode: documentation
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [README, guide, runbook, changelog_draft, docs_patch]
+    forbidden_output_types: [production_code_patch, db_migration, scope_change]
+  - id: ai-delivery-project-manager
+    display_name: "AI Delivery Project Manager"
+    role: "Delivery/project management"
+    primary_responsibility: "Delivery planning, milestones, dependencies, risks, roadmap/Gantt/WBS, status coordination."
+    owns: [delivery_plan, milestones, dependencies, delivery_risks, status_reporting]
+    contributes_to: [roadmap, release_readiness, backlog_dependency_map]
+    cannot_own: [code_editing, architecture_decision, product_scope_finalization]
+    default_mode: delivery_management
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [delivery_plan, status_report, risk_register, dependency_map]
+    forbidden_output_types: [production_code_patch, ADR_final, final_backlog]
+  - id: ai-performance-engineer
+    display_name: "AI Performance Engineer"
+    role: "Performance"
+    primary_responsibility: "Latency, throughput, bottlenecks, caching, rendering, DB/API/LLM performance, load risks."
+    owns: [performance_analysis, load_testing, profiling, optimization_plan, capacity_planning]
+    contributes_to: [performance_bug_report, release_readiness, architecture_risk]
+    cannot_own: [product_scope, direct_deploy, final_backlog]
+    default_mode: performance
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [performance_report, load_test_plan, optimization_plan, performance_bug_report]
+    forbidden_output_types: [scope_change, direct_deploy, final_backlog]
+  - id: ai-monetization-strategist
+    display_name: "AI Monetization Strategist"
+    role: "Монетизация"
+    primary_responsibility: "Monetization analysis, pricing hypotheses, cost modeling, package/tariff design."
+    owns: [monetization_analysis, pricing_hypotheses, cost_modeling, package_design, tariff_analysis]
+    contributes_to: [roadmap, backlog_inputs, business_requirements]
+    cannot_own: [production_pricing_change, payment_code_change, database_migration, final_backlog]
+    default_mode: monetization
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types: [monetization_draft, pricing_hypothesis, cost_model]
+    forbidden_output_types: [payment_code_patch, production_pricing_change, db_migration]

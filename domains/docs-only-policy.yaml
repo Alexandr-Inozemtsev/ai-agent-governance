@@ -1,0 +1,27 @@
+policy_version: "1.0"
+domain: docs_only
+inherits: global
+cannot_weaken_global_policy: true
+mode: documentation_only
+typical_owners:
+  documentation: ai-technical-writer
+  BT: ai-business-analyst
+  TZ: ai-system-analyst
+  ADR: ai-solution-architect
+allowed_actions:
+  - create_docs
+  - edit_docs
+  - propose_policy
+  - draft_templates
+blocked_actions:
+  - any_production_code_change
+  - dependency_change
+  - database_change
+  - CI_CD_change
+  - deploy
+  - Trello_mutation_without_trello_analyst
+required_approvals:
+  docs_source_artifact_change: owner_agent_of_source_artifact
+  policy_change: ai-product-orchestrator
+enforcement:
+  code_changes: BLOCKED_BY_AGENT_POLICY

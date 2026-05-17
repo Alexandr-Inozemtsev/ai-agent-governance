@@ -1,0 +1,24 @@
+policy_version: "1.0"
+rules:
+  - "Работа только через ветки."
+  - "Прямые изменения в main запрещены."
+  - "PR обязателен для production-кода."
+  - "Code review обязателен."
+  - "Тесты обязательны."
+  - "Force push запрещен без явного approval."
+  - "Auto-merge запрещен без release policy."
+  - "Commit messages должны быть осмысленными."
+  - "Нельзя смешивать docs-only и production-code changes без явного указания."
+  - "Bug fix PR должен ссылаться на bug_id."
+  - "PR не закрывает bug автоматически без QA verification."
+required_for_production_code:
+  - branch
+  - PR
+  - tests
+  - code_review
+  - QA_verification_if_bug_fix
+blocked_actions:
+  - direct_main_commit
+  - force_push_without_approval
+  - auto_merge_without_release_policy
+  - close_bug_from_PR_without_QA

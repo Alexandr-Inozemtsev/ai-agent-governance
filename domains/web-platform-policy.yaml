@@ -1,0 +1,25 @@
+policy_version: "1.0"
+domain: web_platform
+inherits: global
+cannot_weaken_global_policy: true
+typical_owners:
+  frontend: ai-frontend-developer
+  backend: ai-backend-developer
+  api_contract: ai-system-analyst
+  ci_cd: ai-devops-engineer
+  security: ai-security-engineer
+allowed_actions:
+  ai-frontend-developer: [React_components, UI_state, frontend_tests, accessibility_fixes_with_approved_task]
+  ai-backend-developer: [API_implementation, service_layer, backend_tests, integration_code_with_approved_task]
+  ai-devops-engineer: [CI_CD_changes_with_approval, environment_config_with_approval]
+blocked_actions:
+  - frontend_changes_database_directly
+  - backend_finalizes_product_backlog
+  - frontend_finalizes_product_backlog
+  - CI_CD_change_without_devops_approval
+  - dependency_change_without_ADR
+required_approvals:
+  runtime_dependency: [ai-solution-architect, ai-security-engineer]
+  production_deploy: [ai-release-manager]
+  public_auth_or_user_data: [ai-security-engineer]
+  database_change: [ai-database-engineer]

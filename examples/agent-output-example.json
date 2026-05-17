@@ -1,0 +1,30 @@
+{
+  "status": "PARTIAL",
+  "agent_name": "ai-qa-engineer",
+  "role": "QA",
+  "task_type": "bug_report",
+  "policy_version": "1.0",
+  "domain_policy_version": "1.0",
+  "project_policy_version": "1.0",
+  "used_skills": ["defect-analysis", "bug-reporting"],
+  "blocked_skills": ["trello-board-mutation"],
+  "input_summary": "Проверка дефекта в ЭПИК-04.",
+  "scope_boundary": "Создан bug report; Trello card не создана без ai-trello-analyst.",
+  "output_artifacts": ["bug_report"],
+  "changed_files": [],
+  "proposed_files": [],
+  "trello_changes": [],
+  "github_changes": [],
+  "bug_reports": ["БАГ-ЭПИК-04-001"],
+  "risks": ["Блокирует закрытие ЭПИК-04."],
+  "assumptions": ["Parent epic указан пользователем."],
+  "policy_violations": [],
+  "unresolved_questions": [],
+  "next_handoff": {
+    "next_agent": "ai-trello-analyst",
+    "reason": "Создать Trello bug card из approved bug report.",
+    "required_inputs": ["bug_report", "parent_epic"]
+  },
+  "required_review": ["ai-qa-engineer"],
+  "recommended_next_step": "Передать bug report ai-trello-analyst."
+}

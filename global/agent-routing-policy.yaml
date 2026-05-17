@@ -1,0 +1,394 @@
+policy_version: "1.0"
+default_rules:
+  deny_by_default: true
+  quality_gate_required: true
+  project_policy_cannot_weaken_global_policy: true
+  task_policy_can_only_restrict: true
+task_types:
+  product_backlog:
+    owner_agent: ai-product-orchestrator
+    contributor_agents: [ai-business-analyst, ai-system-analyst, ai-delivery-project-manager, ai-trello-analyst]
+    required_approvals: [ai-product-orchestrator]
+    required_input_artifacts: [business_context, project_policy]
+    output_artifacts: [approved_backlog]
+    allowed_actions: [prioritize, finalize_backlog, route_to_trello]
+    blocked_actions: [developer_finalizes_backlog, trello_mutation_without_trello_analyst]
+    default_trello_list: "01 Backlog"
+    handoff_rules: "После approval передать ai-trello-analyst для карточек."
+    quality_gate_required: true
+  roadmap:
+    owner_agent: ai-product-orchestrator
+    contributor_agents: [ai-delivery-project-manager, ai-monetization-strategist, ai-release-manager]
+    required_approvals: [ai-product-orchestrator]
+    required_input_artifacts: [strategy, backlog]
+    output_artifacts: [roadmap]
+    allowed_actions: [prioritize, plan_milestones]
+    blocked_actions: [commit_release_without_release_manager]
+    default_trello_list: "01 Backlog"
+    handoff_rules: "Передать delivery план ai-delivery-project-manager."
+    quality_gate_required: true
+  discovery:
+    owner_agent: ai-product-orchestrator
+    contributor_agents: [ai-business-analyst, ai-system-analyst, ai-ui-ux-designer, ai-solution-architect]
+    required_approvals: [ai-product-orchestrator]
+    required_input_artifacts: [user_request]
+    output_artifacts: [discovery_summary, routing_plan]
+    allowed_actions: [clarify_scope, assign_agents]
+    blocked_actions: [production_code_changes]
+    default_trello_list: "Discovery"
+    handoff_rules: "Сначала БТ, затем ТЗ, затем архитектура."
+    quality_gate_required: true
+  business_requirements:
+    owner_agent: ai-business-analyst
+    contributor_agents: [ai-product-orchestrator, ai-monetization-strategist]
+    required_approvals: [ai-product-orchestrator]
+    required_input_artifacts: [problem_statement]
+    output_artifacts: [BT]
+    allowed_actions: [create_BT]
+    blocked_actions: [code_changes, ADR_final]
+    default_trello_list: "Discovery"
+    handoff_rules: "Передать ai-system-analyst."
+    quality_gate_required: true
+  system_requirements:
+    owner_agent: ai-system-analyst
+    contributor_agents: [ai-business-analyst, ai-solution-architect, ai-qa-engineer]
+    required_approvals: [ai-product-orchestrator]
+    required_input_artifacts: [BT]
+    output_artifacts: [TZ]
+    allowed_actions: [create_TZ, specify_API]
+    blocked_actions: [code_changes, release_decision]
+    default_trello_list: "Discovery"
+    handoff_rules: "Передать ai-solution-architect и QA."
+    quality_gate_required: true
+  architecture:
+    owner_agent: ai-solution-architect
+    contributor_agents: [ai-backend-developer, ai-frontend-developer, ai-database-engineer, ai-llm-rag-engineer, ai-security-engineer, ai-devops-engineer]
+    required_approvals: [ai-solution-architect, ai-security-engineer если есть security impact]
+    required_input_artifacts: [BT, TZ]
+    output_artifacts: [architecture_spec, ADR]
+    allowed_actions: [create_ADR, define_boundaries]
+    blocked_actions: [architecture_change_without_ADR]
+    default_trello_list: "Architecture"
+    handoff_rules: "ADR обязателен перед dependency/runtime/DB изменениями."
+    quality_gate_required: true
+  adr:
+    owner_agent: ai-solution-architect
+    contributor_agents: [ai-security-engineer, ai-devops-engineer, ai-database-engineer]
+    required_approvals: [ai-solution-architect, ai-security-engineer если dependency/security, ai-product-orchestrator если scope]
+    required_input_artifacts: [decision_context, alternatives]
+    output_artifacts: [ADR]
+    allowed_actions: [record_decision]
+    blocked_actions: [implement_without_approved_task]
+    default_trello_list: "Architecture"
+    handoff_rules: "После ADR создать технические задачи через orchestrator."
+    quality_gate_required: true
+  backend:
+    owner_agent: ai-backend-developer
+    contributor_agents: [ai-system-analyst, ai-database-engineer, ai-security-engineer, ai-qa-engineer]
+    required_approvals: [ai-product-orchestrator для task, ai-solution-architect если architecture impact]
+    required_input_artifacts: [approved_task, status_ready_for_development]
+    output_artifacts: [backend_patch, backend_tests]
+    allowed_actions: [modify_backend_code, add_tests]
+    blocked_actions: [finalize_backlog, modify_trello, deploy]
+    default_trello_list: "Готово к разработке"
+    handoff_rules: "Передать ai-code-reviewer и ai-qa-engineer."
+    quality_gate_required: true
+  frontend:
+    owner_agent: ai-frontend-developer
+    contributor_agents: [ai-ui-ux-designer, ai-system-analyst, ai-qa-engineer]
+    required_approvals: [ai-product-orchestrator для task]
+    required_input_artifacts: [approved_task, UI_spec, status_ready_for_development]
+    output_artifacts: [frontend_patch, frontend_tests]
+    allowed_actions: [modify_frontend_code, add_tests]
+    blocked_actions: [modify_database, finalize_backlog, modify_trello]
+    default_trello_list: "Готово к разработке"
+    handoff_rules: "Передать ai-code-reviewer и QA."
+    quality_gate_required: true
+  database:
+    owner_agent: ai-database-engineer
+    contributor_agents: [ai-solution-architect, ai-backend-developer, ai-security-engineer]
+    required_approvals: [ai-solution-architect, ai-security-engineer если sensitive data]
+    required_input_artifacts: [migration_plan, rollback_plan]
+    output_artifacts: [schema_design, migration_plan]
+    allowed_actions: [design_schema, prepare_migration]
+    blocked_actions: [db_change_without_migration_plan]
+    default_trello_list: "Готово к разработке"
+    handoff_rules: "Перед execution нужен release/deploy план."
+    quality_gate_required: true
+  llm_rag:
+    owner_agent: ai-llm-rag-engineer
+    contributor_agents: [ai-solution-architect, ai-security-engineer, ai-backend-developer, ai-data-metrics-engineer]
+    required_approvals: [ai-security-engineer для external LLM, ai-solution-architect для provider/dependency]
+    required_input_artifacts: [approved_task, data_sensitivity_rules]
+    output_artifacts: [RAG_spec, prompt_contract, retrieval_eval]
+    allowed_actions: [design_RAG, evaluate_retrieval]
+    blocked_actions: [send_sensitive_data_without_approval, add_dependency_without_ADR]
+    default_trello_list: "Готово к разработке"
+    handoff_rules: "Security review обязателен для prompt injection и external providers."
+    quality_gate_required: true
+  ui_ux:
+    owner_agent: ai-ui-ux-designer
+    contributor_agents: [ai-product-orchestrator, ai-system-analyst, ai-frontend-developer]
+    required_approvals: [ai-product-orchestrator если UX меняет scope]
+    required_input_artifacts: [BT, user_flow_context]
+    output_artifacts: [UI_spec, design_handoff]
+    allowed_actions: [design_flows, define_states]
+    blocked_actions: [production_code_change]
+    default_trello_list: "Discovery"
+    handoff_rules: "Передать frontend после acceptance criteria."
+    quality_gate_required: true
+  security:
+    owner_agent: ai-security-engineer
+    contributor_agents: [ai-solution-architect, ai-devops-engineer, ai-code-reviewer]
+    required_approvals: [ai-security-engineer]
+    required_input_artifacts: [target_scope]
+    output_artifacts: [security_review, threat_model]
+    allowed_actions: [block_task, classify_security_risk]
+    blocked_actions: [ignore_security_review]
+    default_trello_list: "09 Заблокировано"
+    handoff_rules: "Security blockers идут release manager и orchestrator."
+    quality_gate_required: true
+  devops:
+    owner_agent: ai-devops-engineer
+    contributor_agents: [ai-security-engineer, ai-release-manager]
+    required_approvals: [ai-devops-engineer, ai-release-manager для deploy]
+    required_input_artifacts: [approved_task]
+    output_artifacts: [devops_plan, CI_CD_patch]
+    allowed_actions: [modify_CI_CD_with_approval]
+    blocked_actions: [deploy_without_release_approval]
+    default_trello_list: "Готово к разработке"
+    handoff_rules: "Release manager принимает deploy decision."
+    quality_gate_required: true
+  ci_cd:
+    owner_agent: ai-devops-engineer
+    contributor_agents: [ai-security-engineer, ai-code-reviewer]
+    required_approvals: [ai-devops-engineer]
+    required_input_artifacts: [approved_task, rollback_plan]
+    output_artifacts: [CI_CD_patch]
+    allowed_actions: [modify_pipeline]
+    blocked_actions: [disable_tests_without_approval]
+    default_trello_list: "Готово к разработке"
+    handoff_rules: "Review после изменений pipeline."
+    quality_gate_required: true
+  qa:
+    owner_agent: ai-qa-engineer
+    contributor_agents: [ai-test-automation-engineer, ai-code-reviewer, ai-release-manager]
+    required_approvals: [ai-qa-engineer]
+    required_input_artifacts: [acceptance_criteria]
+    output_artifacts: [test_plan, QA_gate]
+    allowed_actions: [validate_acceptance, create_bug_report]
+    blocked_actions: [change_scope, close_bug_without_verification]
+    default_trello_list: "07 QA / проверка"
+    handoff_rules: "Блокеры идут orchestrator/release/security по типу."
+    quality_gate_required: true
+  testing:
+    owner_agent: ai-qa-engineer
+    contributor_agents: [ai-test-automation-engineer, ai-frontend-developer, ai-backend-developer]
+    required_approvals: [ai-qa-engineer]
+    required_input_artifacts: [test_scope]
+    output_artifacts: [test_results, bug_reports]
+    allowed_actions: [run_tests, report_defects]
+    blocked_actions: [hide_failed_tests]
+    default_trello_list: "07 QA / проверка"
+    handoff_rules: "Failures become bug reports with parent."
+    quality_gate_required: true
+  documentation:
+    owner_agent: ai-technical-writer
+    contributor_agents: [ai-business-analyst, ai-system-analyst, ai-solution-architect, ai-release-manager]
+    required_approvals: [owner_agent_of_source_artifact]
+    required_input_artifacts: [source_artifact]
+    output_artifacts: [documentation_patch]
+    allowed_actions: [edit_docs]
+    blocked_actions: [production_code_change_in_docs_only]
+    default_trello_list: "Documentation"
+    handoff_rules: "Docs-only изменения не смешивать с production-code."
+    quality_gate_required: true
+  trello:
+    owner_agent: ai-trello-analyst
+    contributor_agents: [ai-product-orchestrator, ai-qa-engineer]
+    required_approvals: [ai-product-orchestrator для scope, ai-trello-analyst для board mutation]
+    required_input_artifacts: [approved_backlog_or_bug_report]
+    output_artifacts: [Trello_card, checklist, label_update]
+    allowed_actions: [create_card, update_checklist, move_card_by_policy]
+    blocked_actions: [create_duplicate, create_bug_card_without_parent]
+    default_trello_list: "01 Backlog"
+    handoff_rules: "Любая Trello mutation идет через ai-trello-analyst, кроме project-policy exception."
+    quality_gate_required: true
+  github:
+    owner_agent: ai-code-reviewer
+    contributor_agents: [ai-backend-developer, ai-frontend-developer, ai-devops-engineer, ai-release-manager]
+    required_approvals: [code_review, QA_review]
+    required_input_artifacts: [branch, PR]
+    output_artifacts: [PR_review, merge_readiness]
+    allowed_actions: [review_PR, require_tests]
+    blocked_actions: [direct_main_change, force_push_without_approval, auto_merge_without_release_policy]
+    default_trello_list: "Code Review"
+    handoff_rules: "PR не закрывает баг без QA verification."
+    quality_gate_required: true
+  release:
+    owner_agent: ai-release-manager
+    contributor_agents: [ai-qa-engineer, ai-security-engineer, ai-devops-engineer, ai-product-orchestrator]
+    required_approvals: [ai-release-manager, ai-qa-engineer, ai-security-engineer]
+    required_input_artifacts: [QA_pass, security_pass, rollback_plan, release_notes]
+    output_artifacts: [release_decision, release_notes]
+    allowed_actions: [go_no_go, approve_deploy]
+    blocked_actions: [release_with_open_P0_P1_Critical_High_bugs_without_exception]
+    default_trello_list: "Release"
+    handoff_rules: "Deploy только после release decision."
+    quality_gate_required: true
+  performance:
+    owner_agent: ai-performance-engineer
+    contributor_agents: [ai-backend-developer, ai-frontend-developer, ai-database-engineer]
+    required_approvals: [ai-product-orchestrator если scope, ai-solution-architect если architecture]
+    required_input_artifacts: [performance_target]
+    output_artifacts: [performance_report, optimization_plan]
+    allowed_actions: [profile, propose_optimization]
+    blocked_actions: [direct_deploy, scope_change]
+    default_trello_list: "Performance"
+    handoff_rules: "Performance defects become bug reports."
+    quality_gate_required: true
+  monetization:
+    owner_agent: ai-monetization-strategist
+    contributor_agents: [ai-business-analyst, ai-product-orchestrator]
+    required_approvals: [ai-product-orchestrator]
+    required_input_artifacts: [business_context]
+    output_artifacts: [monetization_draft]
+    allowed_actions: [analyze_pricing, draft_packages]
+    blocked_actions: [production_pricing_change, payment_code_change]
+    default_trello_list: "Discovery"
+    handoff_rules: "Final backlog остается за orchestrator."
+    quality_gate_required: true
+  analytics:
+    owner_agent: ai-data-metrics-engineer
+    contributor_agents: [ai-product-orchestrator, ai-security-engineer]
+    required_approvals: [ai-security-engineer если sensitive data]
+    required_input_artifacts: [metric_goal]
+    output_artifacts: [tracking_plan, dashboard_spec]
+    allowed_actions: [define_metrics]
+    blocked_actions: [expose_sensitive_data]
+    default_trello_list: "Analytics"
+    handoff_rules: "Data quality gate перед release."
+    quality_gate_required: true
+  data_metrics:
+    owner_agent: ai-data-metrics-engineer
+    contributor_agents: [ai-database-engineer, ai-performance-engineer]
+    required_approvals: [ai-security-engineer если user data]
+    required_input_artifacts: [data_contract]
+    output_artifacts: [metrics_dictionary, data_quality_report]
+    allowed_actions: [define_events, validate_metrics]
+    blocked_actions: [change_database_without_plan]
+    default_trello_list: "Analytics"
+    handoff_rules: "DB changes через migration policy."
+    quality_gate_required: true
+  incident:
+    owner_agent: ai-release-manager
+    contributor_agents: [ai-devops-engineer, ai-security-engineer, ai-qa-engineer, ai-product-orchestrator]
+    required_approvals: [ai-release-manager]
+    required_input_artifacts: [incident_report]
+    output_artifacts: [incident_plan, hotfix_route]
+    allowed_actions: [triage_incident, route_hotfix]
+    blocked_actions: [hide_error, deploy_without_release_path]
+    default_trello_list: "Hotfix"
+    handoff_rules: "Incident bugs use ИНЦ-БАГ-YYYYMMDD-NNN."
+    quality_gate_required: true
+  bug_report:
+    owner_agent: ai-qa-engineer
+    contributor_agents: [ai-backend-developer, ai-frontend-developer, ai-database-engineer, ai-security-engineer, ai-devops-engineer, ai-product-orchestrator]
+    required_approvals:
+      - "ai-product-orchestrator если баг меняет scope"
+      - "ai-security-engineer если баг связан с безопасностью"
+      - "ai-release-manager если баг блокирует release"
+    required_input_artifacts: [parent_epic_or_task_or_PR_or_incident, reproduction_steps, expected_result]
+    output_artifacts: [bug_report, proposed_Trello_bug_card]
+    required_parent: [epic]
+    allowed_actions: [create_bug_report, propose_bug_card, block_QA_gate]
+    blocked_actions:
+      - "менять scope без ai-product-orchestrator"
+      - "закрывать баг без QA verification"
+      - "закрывать эпик при открытых P0/P1 bugs"
+    default_trello_list: "07 QA / проверка"
+    handoff_rules: "Trello card создает ai-trello-analyst, кроме разрешенного project policy fast mode."
+    quality_gate_required: true
+  bug_triage:
+    owner_agent: ai-qa-engineer
+    contributor_agents: [ai-product-orchestrator, ai-security-engineer, ai-release-manager]
+    required_approvals: [ai-product-orchestrator если scope, ai-security-engineer если security, ai-release-manager если release blocker]
+    required_input_artifacts: [bug_report]
+    output_artifacts: [triage_decision, owner_route]
+    allowed_actions: [classify_severity_priority, detect_duplicate, assign_owner]
+    blocked_actions: [create_card_without_parent, hide_scope_change]
+    default_trello_list: "07 QA / проверка"
+    handoff_rules: "Route bug_fix by affected_area."
+    quality_gate_required: true
+  bug_fix:
+    owner_agent: "зависит от affected_area"
+    routing_rules:
+      - "Backend -> ai-backend-developer"
+      - "Frontend -> ai-frontend-developer"
+      - "Database -> ai-database-engineer"
+      - "Security -> ai-security-engineer + responsible developer"
+      - "DevOps -> ai-devops-engineer"
+    contributor_agents: [ai-qa-engineer, ai-code-reviewer]
+    required_approvals: [approved_bug_report]
+    required_input_artifacts: [approved_bug_report, parent_epic, reproduction_steps, expected_result]
+    output_artifacts: [bug_fix_patch, tests, QA_verification_request]
+    allowed_actions: [fix_affected_area, add_or_update_tests]
+    blocked_actions: [scope_change_without_orchestrator, close_bug_without_QA]
+    default_trello_list: "Исправление багов"
+    handoff_rules: "После fix -> code review -> QA verification -> Trello update."
+    quality_gate_required: true
+  refactoring:
+    owner_agent: ai-solution-architect
+    contributor_agents: [ai-code-reviewer, affected_developer_agent]
+    required_approvals: [ai-product-orchestrator, ai-solution-architect]
+    required_input_artifacts: [approved_refactoring_task]
+    output_artifacts: [refactoring_plan, code_patch_if_approved]
+    allowed_actions: [refactor_with_tests]
+    blocked_actions: [behavior_change_without_scope_review]
+    default_trello_list: "Готово к разработке"
+    handoff_rules: "Refactoring не смешивать с feature scope."
+    quality_gate_required: true
+  dependency_update:
+    owner_agent: ai-solution-architect
+    contributor_agents: [ai-security-engineer, ai-devops-engineer, affected_developer_agent]
+    required_approvals: [ADR, security_license_review]
+    required_input_artifacts: [ADR, license_review, rollback_plan]
+    output_artifacts: [dependency_change_plan]
+    allowed_actions: [update_dependency_after_approval]
+    blocked_actions: [add_runtime_dependency_without_ADR]
+    default_trello_list: "Architecture"
+    handoff_rules: "Не смешивать с feature-code без явного разрешения."
+    quality_gate_required: true
+  database_migration:
+    owner_agent: ai-database-engineer
+    contributor_agents: [ai-solution-architect, ai-devops-engineer, ai-release-manager, ai-security-engineer]
+    required_approvals: [migration_plan, rollback_plan, release_policy]
+    required_input_artifacts: [migration_plan, rollback_plan]
+    output_artifacts: [migration_artifact, rollback_plan]
+    allowed_actions: [prepare_migration]
+    blocked_actions: [change_db_without_plan]
+    default_trello_list: "Готово к разработке"
+    handoff_rules: "Execution only through release/deploy plan."
+    quality_gate_required: true
+  deployment:
+    owner_agent: ai-release-manager
+    contributor_agents: [ai-devops-engineer, ai-qa-engineer, ai-security-engineer]
+    required_approvals: [QA_pass, security_pass, release_approval]
+    required_input_artifacts: [release_candidate, rollback_plan]
+    output_artifacts: [deployment_decision]
+    allowed_actions: [approve_deploy]
+    blocked_actions: [direct_deploy_without_release]
+    default_trello_list: "Release"
+    handoff_rules: "DevOps executes only after release decision."
+    quality_gate_required: true
+  production_hotfix:
+    owner_agent: ai-release-manager
+    contributor_agents: [ai-devops-engineer, ai-security-engineer, ai-qa-engineer, affected_developer_agent]
+    required_approvals: [ai-release-manager, ai-security-engineer если security, QA_verification]
+    required_input_artifacts: [incident, hotfix_scope, rollback_plan]
+    output_artifacts: [hotfix_plan, hotfix_release_decision]
+    allowed_actions: [route_hotfix, approve_hotfix_release]
+    blocked_actions: [scope_creep, skip_QA_without_exception]
+    default_trello_list: "Hotfix"
+    handoff_rules: "Post-release bug verification remains with QA."
+    quality_gate_required: true

@@ -1,0 +1,47 @@
+policy_version: "1.0"
+escalation_required_when:
+  - trigger: conflicting_requirements
+    escalate_to: ai-product-orchestrator
+    response: NEEDS_ORCHESTRATOR_REVIEW
+  - trigger: policy_violation_attempt
+    escalate_to: ai-product-orchestrator
+    response: BLOCKED_BY_AGENT_POLICY
+  - trigger: architecture_decision
+    escalate_to: ai-solution-architect
+    response: NEEDS_APPROVAL
+  - trigger: security_risk
+    escalate_to: ai-security-engineer
+    response: NEEDS_APPROVAL
+  - trigger: new_runtime_dependency
+    escalate_to: [ai-solution-architect, ai-security-engineer]
+    response: NEEDS_APPROVAL
+  - trigger: database_migration
+    escalate_to: [ai-database-engineer, ai-release-manager]
+    response: NEEDS_APPROVAL
+  - trigger: production_deploy
+    escalate_to: ai-release-manager
+    response: NEEDS_APPROVAL
+  - trigger: scope_change
+    escalate_to: ai-product-orchestrator
+    response: NEEDS_ORCHESTRATOR_REVIEW
+  - trigger: agent_conflict
+    escalate_to: ai-product-orchestrator
+    response: NEEDS_ORCHESTRATOR_REVIEW
+  - trigger: unclear_owner
+    escalate_to: ai-product-orchestrator
+    response: NEEDS_ORCHESTRATOR_REVIEW
+  - trigger: insufficient_input
+    escalate_to: ai-product-orchestrator
+    response: NEEDS_CLARIFICATION
+  - trigger: bug_requires_scope_change
+    escalate_to: ai-product-orchestrator
+    response: NEEDS_PRODUCT_REVIEW
+  - trigger: bug_blocks_release
+    escalate_to: ai-release-manager
+    response: NEEDS_APPROVAL
+  - trigger: security_blocker_bug
+    escalate_to: ai-security-engineer
+    response: NEEDS_APPROVAL
+  - trigger: epic_has_open_P0_P1_or_Critical_High_bugs
+    escalate_to: [ai-product-orchestrator, ai-qa-engineer]
+    response: BLOCKED_BY_AGENT_POLICY

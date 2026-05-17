@@ -1,0 +1,21 @@
+policy_version: "1.0"
+domain: analytics_platform
+inherits: global
+cannot_weaken_global_policy: true
+typical_owners:
+  metrics: ai-data-metrics-engineer
+  database: ai-database-engineer
+  security: ai-security-engineer
+  product_metrics_scope: ai-product-orchestrator
+allowed_actions:
+  ai-data-metrics-engineer: [tracking_plan, dashboard_spec, data_quality_rules, metrics_dictionary]
+  ai-database-engineer: [schema_design, migration_plan, data_retention_rules]
+blocked_actions:
+  - sensitive_data_dashboard_without_security_review
+  - metric_definition_change_without_owner
+  - data_pipeline_change_without_approved_task
+  - DB_change_without_migration_plan
+required_approvals:
+  user_data_metrics: [ai-security-engineer]
+  DB_or_pipeline_change: [ai-database-engineer, ai-release-manager_if_production]
+  product_metric_definition: [ai-product-orchestrator]

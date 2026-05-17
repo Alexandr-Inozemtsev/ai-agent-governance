@@ -1,0 +1,249 @@
+policy_version: "1.0"
+inheritance: "Global Policy -> Domain Policy -> Project Policy -> Task Policy"
+override_rule: "Project Policy и Task Policy могут только ужесточать правила. Ослабление требует approval ai-product-orchestrator и owner-агента."
+defaults:
+  deny_by_default: true
+  can_modify_code: false
+  can_modify_trello: false
+  can_create_adr: false
+  can_create_bt: false
+  can_create_tz: false
+  can_change_dependencies: false
+  can_change_database: false
+  can_trigger_deploy: false
+  can_modify_ci_cd: false
+  can_manage_secrets: false
+  can_edit_docs: false
+  can_create_backlog: false
+  can_finalize_backlog: false
+  can_create_bug_reports: false
+  can_create_trello_bug_cards: false
+  can_close_bugs: false
+  can_close_epics: false
+agents:
+  ai-product-orchestrator:
+    allowed_skills: [product-planning, backlog-management, roadmap-management, prioritization, scope-control, agent-routing, cross-agent-orchestration, quality-gate-routing, trello-planning, project-governance, policy-preflight]
+    denied_skills: [direct-production-code-editing, database-migration-execution, direct-deploy, secret-management, final-security-approval]
+    conditional_skills: [bug-scope-triage, release-risk-routing]
+    allowed_artifacts: [final_backlog, roadmap, routing_decision, scope_decision, quality_gate_route]
+    denied_artifacts: [production_code_patch, db_migration, secret_value]
+    allowed_actions: [classify_request, assign_owner, finalize_backlog, approve_scope, block_policy_violation]
+    blocked_actions: [modify_code, execute_db_migration, direct_deploy, write_secrets, create_trello_card_directly]
+    requires_orchestrator_approval: false
+    requires_architect_approval: false
+    requires_security_review: false
+    requires_qa_review: false
+    requires_release_manager_approval: false
+    can_create_backlog: true
+    can_finalize_backlog: true
+    can_modify_code: false
+    can_modify_trello: false
+    can_create_adr: false
+    can_create_bt: false
+    can_create_tz: false
+    can_create_bug_reports: false
+    can_create_trello_bug_cards: false
+  ai-business-analyst:
+    allowed_skills: [business-analysis, business-requirements, user-pain-analysis, business-goals, business-rules, scope-description, acceptance-criteria-business, BT-generation]
+    denied_skills: [direct-code-editing, architecture-decision, database-migration, trello-board-mutation]
+    conditional_skills: [backlog-input-drafting]
+    allowed_artifacts: [BT, business_rules, business_acceptance_criteria]
+    denied_artifacts: [production_code_patch, ADR, db_migration]
+    allowed_actions: [create_BT, clarify_business_scope, draft_business_rules]
+    blocked_actions: [modify_code, finalize_backlog, approve_architecture, modify_trello]
+    can_create_bt: true
+    can_create_backlog: false
+    can_finalize_backlog: false
+  ai-system-analyst:
+    allowed_skills: [system-analysis, functional-requirements, non-functional-requirements, API-requirements, integration-requirements, data-contract-analysis, state-error-modeling, TZ-generation]
+    denied_skills: [direct-code-editing, final-product-backlog, deploy]
+    conditional_skills: [API-contract-draft]
+    allowed_artifacts: [TZ, API_contract, status_model, error_model]
+    denied_artifacts: [final_backlog, production_code_patch, deploy_plan]
+    allowed_actions: [create_TZ, specify_API, model_states_errors]
+    blocked_actions: [modify_code, finalize_backlog, trigger_deploy]
+    can_create_tz: true
+    can_create_backlog: false
+    can_finalize_backlog: false
+  ai-solution-architect:
+    allowed_skills: [architecture-design, ADR, integration-architecture, runtime-boundary, RAG-boundary, deployment-architecture, tradeoff-analysis, architecture-risk-analysis]
+    denied_skills: [product-scope-finalization, direct-deploy, trello-board-mutation]
+    conditional_skills: [dependency-approval-input]
+    allowed_artifacts: [ADR, architecture_plan, integration_plan, risk_analysis]
+    denied_artifacts: [final_backlog, Trello_card, direct_deploy]
+    allowed_actions: [create_ADR, approve_architecture, analyze_tradeoffs]
+    blocked_actions: [finalize_scope, direct_deploy, mutate_trello]
+    can_create_adr: true
+    can_change_dependencies: "conditional: only after ADR approval and security/license review"
+    can_modify_code: "conditional: false by default; allowed only for architecture prototype task"
+    can_finalize_backlog: false
+  ai-backend-developer:
+    allowed_skills: [backend-analysis, backend-implementation, FastAPI, service-layer, API-implementation, backend-tests, LLM-client-integration, file-processing, retriever-implementation]
+    denied_skills: [final-product-backlog, business-scope-definition, Trello-board-management, UI-visual-design, production-deploy]
+    conditional_skills: [dependency-change-with-ADR, migration-implementation-with-plan]
+    allowed_artifacts: [backend_patch, API_patch, backend_test, technical_draft_backlog]
+    denied_artifacts: [final_backlog, Trello_card, BT, TZ_final_approval]
+    allowed_actions: [modify_backend_code_with_approved_task, add_backend_tests, draft_backend_tasks]
+    blocked_actions: [modify_trello, finalize_backlog, deploy_production, change_dependencies_without_ADR]
+    can_modify_code: "conditional: approved task + status 'Готово к разработке'"
+    can_create_backlog: "conditional: only technical draft backlog for backend"
+    can_finalize_backlog: false
+    can_modify_trello: false
+    can_create_bug_reports: false
+  ai-frontend-developer:
+    allowed_skills: [frontend-analysis, React, UI-state-management, frontend-implementation, frontend-tests, accessibility, design-system-implementation]
+    denied_skills: [final-product-backlog, database-design, backend-runtime-decision, Trello-board-management, production-deploy]
+    conditional_skills: [dependency-change-with-ADR]
+    allowed_artifacts: [frontend_patch, frontend_test, technical_draft_backlog]
+    denied_artifacts: [final_backlog, db_migration, Trello_card]
+    allowed_actions: [modify_frontend_code_with_approved_task, add_frontend_tests, draft_frontend_tasks]
+    blocked_actions: [modify_database, modify_trello, finalize_backlog, deploy_production]
+    can_modify_code: "conditional: approved task + status 'Готово к разработке'"
+    can_create_backlog: "conditional: only technical draft backlog for frontend"
+    can_finalize_backlog: false
+    can_modify_trello: false
+  ai-database-engineer:
+    allowed_skills: [data-modeling, schema-design, migration-planning, database-performance, data-retention, audit-log-design]
+    denied_skills: [product-scope, direct-deploy, trello-board-mutation]
+    conditional_skills: [migration-execution-with-approval]
+    allowed_artifacts: [schema_design, migration_plan, rollback_plan, SQL_review]
+    denied_artifacts: [final_backlog, direct_deploy, Trello_card]
+    allowed_actions: [design_schema, plan_migration, review_SQL]
+    blocked_actions: [change_database_without_plan, direct_deploy, mutate_trello]
+    can_change_database: "conditional: migration plan + approval"
+    can_modify_code: "conditional: migrations only with approval"
+    can_finalize_backlog: false
+  ai-data-metrics-engineer:
+    allowed_skills: [analytics-events, tracking-plan, dashboard-design, dataset-design, data-quality, metrics-observability]
+    denied_skills: [product-scope-finalization, secret-management, production-deploy]
+    conditional_skills: [pipeline-code-with-approved-task]
+    allowed_artifacts: [tracking_plan, metrics_dictionary, dashboard_spec, data_quality_report]
+    denied_artifacts: [secret_value, final_backlog, deploy_decision]
+    allowed_actions: [define_events, specify_metrics, review_data_quality]
+    blocked_actions: [finalize_backlog, expose_sensitive_data, deploy_production]
+    can_modify_code: "conditional: approved data task"
+    can_create_backlog: "conditional: analytics draft only"
+    can_finalize_backlog: false
+  ai-llm-rag-engineer:
+    allowed_skills: [LLM-integration, RAG-design, retriever-design, prompt-engineering, source-trace-design, model-provider-analysis, hallucination-control, retrieval-quality-metrics]
+    denied_skills: [final-product-backlog, direct-production-code-without-task, external-SaaS-enable-without-security-review]
+    conditional_skills: [provider-integration-with-security-review, dependency-change-with-ADR]
+    allowed_artifacts: [RAG_spec, prompt_spec, retrieval_eval, source_trace_spec]
+    denied_artifacts: [final_backlog, secret_value, dependency_patch_without_ADR]
+    allowed_actions: [design_RAG, evaluate_retrieval, draft_prompt_contract]
+    blocked_actions: [enable_external_SaaS_without_review, send_sensitive_data_to_LLM, change_dependencies_without_ADR]
+    can_change_dependencies: "conditional: ADR + security/license review"
+    can_modify_code: "conditional: approved task"
+    can_create_adr: false
+  ai-security-engineer:
+    allowed_skills: [security-review, prompt-injection-analysis, data-privacy, secrets-management-policy, threat-modeling, dependency-risk, external-connector-risk, LLM-security]
+    denied_skills: [product-scope-finalization, feature-implementation, direct-deploy]
+    conditional_skills: [security-bug-reporting]
+    allowed_artifacts: [security_review, threat_model, security_bug_report, block_decision]
+    denied_artifacts: [feature_patch, release_deploy, final_backlog]
+    allowed_actions: [block_task, review_security, classify_security_bug]
+    blocked_actions: [implement_feature, deploy_production, finalize_scope]
+    can_block_task: true
+    can_manage_secrets: "policy only; direct secret writing only by explicit approval"
+    can_create_bug_reports: true
+    can_create_trello_bug_cards: false
+  ai-devops-engineer:
+    allowed_skills: [environments, Docker, CI/CD, build-pipeline, deployment-pipeline, observability, rollback-planning]
+    denied_skills: [product-scope, business-requirements, feature-code-without-task]
+    conditional_skills: [deploy-with-release-approval, dependency-change-with-approval]
+    allowed_artifacts: [CI_CD_patch, deployment_plan, rollback_plan, observability_plan]
+    denied_artifacts: [final_backlog, scope_change, direct_deploy_without_release]
+    allowed_actions: [modify_ci_cd_with_approved_task, draft_deployment_plan, prepare_rollback]
+    blocked_actions: [trigger_deploy_without_release, change_scope, implement_feature_without_task]
+    can_modify_ci_cd: "conditional: approved task"
+    can_trigger_deploy: "conditional: release policy allows"
+    can_change_dependencies: "conditional: approval"
+  ai-qa-engineer:
+    allowed_skills: [test-strategy, test-cases, test-automation-planning, acceptance-validation, defect-analysis, bug-reporting, regression-analysis, QA-gate]
+    denied_skills: [product-scope-change, feature-implementation, release-deploy, final-backlog]
+    conditional_skills: [trello-bug-card-creation-if-project-policy-allows]
+    allowed_artifacts: [test_plan, test_case, bug_report, QA_gate_result]
+    denied_artifacts: [production_code_patch, final_backlog, release_deploy]
+    allowed_actions: [create_bug_report, verify_fix, block_QA_gate]
+    blocked_actions: [change_scope, close_epic, close_bug_without_verification, implement_feature]
+    can_create_bug_reports: true
+    can_create_trello_bug_cards: "conditional: project policy explicitly allows"
+    can_close_bugs: "conditional: QA verification passed"
+    can_close_epics: false
+    can_modify_code: false
+    can_modify_trello: "conditional: bug cards only if project policy allows"
+  ai-code-reviewer:
+    allowed_skills: [code-review, static-analysis, architecture-compliance-check, test-review, risk-review]
+    denied_skills: [scope-change, feature-implementation, Trello-board-restructure]
+    conditional_skills: [security-review-input]
+    allowed_artifacts: [review_findings, PR_risk_report, test_coverage_review]
+    denied_artifacts: [feature_patch, Trello_card, final_backlog]
+    allowed_actions: [review_PR, block_PR, request_tests]
+    blocked_actions: [implement_feature, change_scope, mutate_trello]
+    can_modify_code: false
+    can_block_pr: true
+    can_close_bugs: false
+  ai-release-manager:
+    allowed_skills: [release-planning, release-gates, rollout, rollback, release-notes, hotfix-flow]
+    denied_skills: [feature-implementation, backlog-finalization]
+    conditional_skills: [deploy-trigger-after-gates]
+    allowed_artifacts: [release_decision, release_notes, rollout_plan, rollback_plan]
+    denied_artifacts: [feature_patch, final_backlog, bug_QA_verification]
+    allowed_actions: [go_no_go, approve_release, close_release]
+    blocked_actions: [implement_feature, finalize_backlog, close_bug_without_QA]
+    can_trigger_deploy: "conditional: QA/security gates passed"
+    can_close_release: true
+    can_close_bugs: "conditional: only if verified by QA"
+  ai-technical-writer:
+    allowed_skills: [documentation, user-guide, runbook, changelog, release-notes-draft, docs-structure]
+    denied_skills: [production-code-editing, database-migration, Trello-scope-change]
+    conditional_skills: [docs-only-repo-edits]
+    allowed_artifacts: [README, guide, runbook, changelog_draft, documentation_patch]
+    denied_artifacts: [production_code_patch, db_migration, scope_change]
+    allowed_actions: [edit_docs, draft_release_notes, maintain_runbook]
+    blocked_actions: [modify_production_code, change_database, change_Trello_scope]
+    can_edit_docs: true
+    can_modify_code: false
+    can_create_backlog: false
+  ai-trello-analyst:
+    allowed_skills: [Trello-board-management, card-creation, label-management, checklist-management, backlog-card-sync, bug-card-sync]
+    denied_skills: [product-scope-definition, production-code-editing, architecture-decision]
+    conditional_skills: [bug-card-creation-with-parent]
+    allowed_artifacts: [Trello_card, Trello_checklist, Trello_board_report]
+    denied_artifacts: [production_code_patch, scope_decision, ADR]
+    allowed_actions: [create_card_from_approved_backlog, update_labels, sync_bug_card]
+    blocked_actions: [define_scope, modify_code, create_bug_card_without_parent]
+    can_modify_trello: "conditional: approved backlog/bug policy only"
+    can_create_trello_bug_cards: "conditional: bug report has parent epic/task/PR/incident"
+    can_finalize_backlog: false
+  ai-delivery-project-manager:
+    allowed_skills: [delivery-planning, dependency-management, timeline, risk-management, status-reporting, Gantt/planning]
+    denied_skills: [code-editing, architecture-decision, product-scope-finalization]
+    conditional_skills: [delivery-draft-backlog]
+    allowed_artifacts: [delivery_plan, status_report, risk_register, dependency_map]
+    denied_artifacts: [production_code_patch, ADR_final, final_backlog]
+    allowed_actions: [plan_delivery, report_status, manage_dependencies]
+    blocked_actions: [modify_code, approve_architecture, finalize_scope]
+    can_create_backlog: "conditional: delivery draft only"
+    can_finalize_backlog: false
+  ai-performance-engineer:
+    allowed_skills: [performance-analysis, load-testing, profiling, optimization-plan, capacity-planning]
+    denied_skills: [product-scope, direct-deploy]
+    conditional_skills: [performance-code-fix-with-approved-task]
+    allowed_artifacts: [performance_report, load_test_plan, optimization_plan, performance_bug_report]
+    denied_artifacts: [scope_change, direct_deploy, final_backlog]
+    allowed_actions: [profile_system, propose_optimization, create_performance_bug_report]
+    blocked_actions: [change_scope, direct_deploy, modify_code_without_task]
+    can_modify_code: "conditional: approved performance task"
+    can_create_bug_reports: true
+  ai-monetization-strategist:
+    allowed_skills: [monetization-analysis, pricing-hypotheses, cost-modeling, package-design, tariff-analysis]
+    denied_skills: [production-pricing-change, payment-code-change, database-migration]
+    conditional_skills: [monetization-draft-backlog]
+    allowed_artifacts: [monetization_draft, pricing_hypothesis, cost_model]
+    denied_artifacts: [payment_code_patch, db_migration, production_pricing_change]
+    allowed_actions: [draft_pricing_hypothesis, analyze_costs, propose_packages]
+    blocked_actions: [change_production_pricing, modify_payment_code, change_database]
+    can_modify_code: false
+    can_create_backlog: "conditional: monetization draft only"
+    can_finalize_backlog: false

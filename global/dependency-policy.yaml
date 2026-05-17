@@ -1,0 +1,30 @@
+policy_version: "1.0"
+owner_agent: ai-solution-architect
+required_reviews: [ai-security-engineer]
+rules:
+  - "Нельзя добавлять runtime dependency без ADR."
+  - "Нельзя использовать GPL/AGPL/SSPL/Commons Clause/non-commercial/source-available dependency без отдельного review."
+  - "Нужно фиксировать license."
+  - "Нужно фиксировать transitive dependency risk."
+  - "Нужно фиксировать security risk."
+  - "Нужно объяснять, зачем зависимость нужна."
+  - "Нужно указать rollback plan."
+  - "Dependency update не должен смешиваться с feature-code без явного разрешения."
+required_fields:
+  - dependency_name
+  - dependency_type
+  - runtime_or_dev
+  - reason
+  - alternatives
+  - license
+  - transitive_dependency_risk
+  - security_risk
+  - rollback_plan
+  - ADR_link
+blocked_licenses:
+  - GPL
+  - AGPL
+  - SSPL
+  - Commons Clause
+  - non-commercial
+  - source-available-with-restrictions

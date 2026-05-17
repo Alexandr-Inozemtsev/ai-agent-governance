@@ -1,0 +1,24 @@
+policy_version: "1.0"
+domain: game_platform
+inherits: global
+cannot_weaken_global_policy: true
+typical_owners:
+  game_backend: ai-backend-developer
+  frontend_or_client: ai-frontend-developer
+  game_economy: ai-monetization-strategist
+  performance: ai-performance-engineer
+  release: ai-release-manager
+allowed_actions:
+  ai-monetization-strategist: [economy_hypothesis, pricing_draft, package_design_draft]
+  ai-performance-engineer: [frame_rate_analysis, load_testing, profiling]
+  ai-backend-developer: [multiplayer_backend_with_approved_task, store_integration_after_security_review]
+blocked_actions:
+  - production_pricing_change_without_product_approval
+  - payment_or_store_code_without_security_review
+  - multiplayer_security_change_without_review
+  - asset_license_change_without_review
+  - dependency_change_without_ADR
+required_approvals:
+  purchases_or_payments: [ai-security-engineer, ai-release-manager]
+  game_economy_change: [ai-product-orchestrator, ai-monetization-strategist]
+  multiplayer_release: [ai-qa-engineer, ai-performance-engineer, ai-release-manager]

@@ -1,0 +1,28 @@
+policy_version: "1.0"
+owner_agent: ai-security-engineer
+rules:
+  - "Секреты не хранить в коде."
+  - "API keys не логировать."
+  - "LLM prompt injection учитывать всегда."
+  - "Пользовательские файлы считать недоверенными."
+  - "Внешние LLM использовать только по настройкам проекта."
+  - "Sensitive data не отправлять во внешний LLM без разрешения."
+  - "Security review обязателен для auth, secrets, external connectors, LLM providers, file upload, payments, user data."
+  - "Security bug всегда получает отдельный severity."
+  - "Security bug нельзя закрыть без ai-security-engineer."
+mandatory_security_review_for:
+  - auth
+  - authorization
+  - secrets
+  - external_connectors
+  - LLM_providers
+  - file_upload
+  - payments
+  - user_data
+  - data_export
+  - prompt_injection_surface
+blocked_actions:
+  - hardcode_secret
+  - log_api_key
+  - send_sensitive_data_to_external_LLM_without_approval
+  - close_security_bug_without_security_review

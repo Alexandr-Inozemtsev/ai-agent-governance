@@ -1,0 +1,23 @@
+policy_version: "1.0"
+domain: mobile_platform
+inherits: global
+cannot_weaken_global_policy: true
+typical_owners:
+  mobile_ui: ai-frontend-developer
+  builds: ai-devops-engineer
+  device_testing: ai-qa-engineer
+  performance: ai-performance-engineer
+  release: ai-release-manager
+allowed_actions:
+  ai-frontend-developer: [mobile_UI_with_approved_task, frontend_tests]
+  ai-devops-engineer: [mobile_build_pipeline_with_approval, signing_config_policy]
+  ai-qa-engineer: [device_test_plan, regression_report]
+blocked_actions:
+  - app_store_release_without_release_manager
+  - signing_secret_change_without_security_review
+  - device_testing_skipped_for_release
+  - dependency_change_without_ADR
+required_approvals:
+  app_store_release: [ai-release-manager]
+  signing_or_secrets: [ai-security-engineer]
+  mobile_performance_gate: [ai-performance-engineer, ai-qa-engineer]

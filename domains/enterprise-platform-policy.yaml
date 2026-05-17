@@ -1,0 +1,23 @@
+policy_version: "1.0"
+domain: enterprise_platform
+inherits: global
+cannot_weaken_global_policy: true
+typical_owners:
+  security: ai-security-engineer
+  integrations: ai-solution-architect
+  backend: ai-backend-developer
+  audit: ai-data-metrics-engineer
+  release: ai-release-manager
+allowed_actions:
+  ai-security-engineer: [threat_modeling, data_privacy_review, connector_security_review]
+  ai-solution-architect: [integration_architecture, audit_boundary_ADR]
+blocked_actions:
+  - corporate_data_export_without_approval
+  - external_connector_without_security_review
+  - audit_log_removal
+  - auth_change_without_security_review
+  - deploy_without_release_policy
+required_approvals:
+  auth_or_SSO: [ai-security-engineer, ai-solution-architect]
+  enterprise_connector: [ai-security-engineer, ai-solution-architect]
+  audit_log_change: [ai-security-engineer, ai-data-metrics-engineer]

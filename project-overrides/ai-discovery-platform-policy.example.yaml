@@ -1,0 +1,31 @@
+policy_version: "1.0"
+project_id: ai-discovery-platform
+project_name: "AI Discovery Platform"
+repository: "C:/Projects/AI-Discovery-Platform"
+domain_policy: "domains/ai-rag-platform-policy.yaml"
+trello_board: "<AI Discovery Platform board URL>"
+allowed_agents: [ai-product-orchestrator, ai-business-analyst, ai-system-analyst, ai-solution-architect, ai-backend-developer, ai-frontend-developer, ai-database-engineer, ai-llm-rag-engineer, ai-security-engineer, ai-qa-engineer, ai-trello-analyst, ai-release-manager, ai-code-reviewer, ai-technical-writer]
+disabled_agents: []
+security_notes:
+  - "Пользовательские файлы и retrieved chunks считаются недоверенными."
+  - "Prompt injection review обязателен для ingestion, retrieval и generation."
+llm_notes:
+  - "External LLM только по approved provider rules."
+  - "Source trace обязателен для RAG answers."
+backend_frontend_data_notes:
+  - "Backend/API changes требуют approved task."
+  - "DB changes требуют migration plan."
+blocked_actions_extra:
+  - "отключить source trace"
+  - "отправить sensitive documents во внешний LLM без approval"
+bug_rules:
+  can_create_bug_reports: true
+  can_create_trello_bug_cards: false
+  bug_card_requires_parent_epic: true
+  epic_card_must_track_open_bugs: true
+  block_epic_done_if_open_p0_p1_bugs: true
+  block_epic_done_if_open_critical_high_bugs: true
+  allowed_bug_lists: ["07 QA / проверка", "09 Заблокировано", "Исправление багов"]
+  required_bug_labels: ["Баг", "QA", "LLM/RAG", "Backend", "Frontend", "Data"]
+  bug_id_format: "БАГ-ЭПИК-{epic_number}-{sequence}"
+  requires_qa_verification_to_close: true

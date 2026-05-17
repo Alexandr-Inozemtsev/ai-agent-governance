@@ -1,0 +1,32 @@
+policy_version: "1.0"
+owner_agent: ai-release-manager
+rules:
+  - "Release decision принимает ai-release-manager."
+  - "Production deploy требует QA pass."
+  - "Security blockers должны быть закрыты."
+  - "Migration plan обязателен, если меняется БД."
+  - "Rollback plan обязателен."
+  - "Release notes обязательны."
+  - "Hotfix имеет отдельный путь."
+  - "Release нельзя проводить при открытых P0/P1/Critical/High bugs, если нет documented exception approval."
+required_release_inputs:
+  - QA_pass
+  - security_pass
+  - open_bug_report
+  - rollback_plan
+  - release_notes
+  - migration_plan_if_DB_changed
+hotfix_required_inputs:
+  - incident
+  - hotfix_scope
+  - risk_assessment
+  - rollback_plan
+  - QA_verification_or_documented_exception
+blocked_release_conditions:
+  - open_P0_bug
+  - open_P1_bug
+  - open_Critical_bug
+  - open_High_bug
+  - security_blocker
+  - missing_rollback_plan
+  - missing_QA_pass
