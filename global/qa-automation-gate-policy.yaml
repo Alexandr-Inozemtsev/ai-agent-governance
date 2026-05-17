@@ -106,3 +106,23 @@ output_format:
       next_agent: ai-test-automation-engineer
       reason: ""
     QA_gate_status: ""
+
+integration_with_decomposition_status_and_gantt:
+  task_decomposition_required_when:
+    - existing_functionality_impacted
+    - QA_gate
+    - failed_required_autotests
+  status_sync_events:
+    - automated_tests_requested
+    - automated_tests_started
+    - automated_tests_passed
+    - automated_tests_failed
+    - automated_tests_flaky
+    - QA_gate_started
+    - manual_testing_started
+    - qa_passed
+    - qa_failed
+  gantt_update_required_when:
+    - required_autotests_failed
+    - required_autotests_missing_for_release_critical_scope
+    - QA_gate_failed

@@ -1,14 +1,20 @@
 policy_version: "1.0"
 owner_agent: ai-trello-analyst
 scope_owner_agent: ai-product-orchestrator
+source_of_truth:
+  execution_status: Trello
+  product_scope: approved_backlog
+  note: "Trello не является source of truth для product scope; scope утверждает ai-product-orchestrator."
 rules:
   - "Trello меняет только ai-trello-analyst, кроме project-policy исключений."
+  - "Любой агент может предложить status update, но применяет его только ai-trello-analyst."
   - "Карточки создаются только из approved backlog."
   - "Карточка должна иметь owner, labels, acceptance criteria, DoD, dependencies."
   - "Нельзя создавать дубли."
   - "Нельзя менять scope карточки без ai-product-orchestrator."
   - "Нельзя двигать карточку в 'Готово к разработке' без acceptance criteria."
   - "Нельзя двигать карточку в 'Готово' без QA/Review."
+  - "Нельзя двигать карточку в Done при failed required autotests."
   - "Bug card создается только с parent epic/task/PR/incident."
   - "Parent epic checklist 'Баги / дефекты' должен обновляться."
   - "Нельзя закрыть epic card, если есть открытые P0/P1/Critical/High bugs."
@@ -22,3 +28,22 @@ card_required_fields:
   - dependencies
 bug_card_required_parent: [epic, task, PR, incident]
 duplicate_policy: update_existing_card
+status_update_events:
+  - approved_backlog
+  - task_started
+  - code_review_requested
+  - automated_tests_started
+  - automated_tests_failed
+  - automated_tests_passed
+  - qa_started
+  - qa_failed
+  - qa_passed
+  - blocked
+  - done
+status_update_requirements:
+  evidence_required: true
+  proposed_status_update_required_for_non_trello_agents: true
+  done_requires:
+    - QA_or_review_evidence
+    - no_failed_required_autotests
+    - no_open_P0_P1_Critical_High_bugs_for_epic

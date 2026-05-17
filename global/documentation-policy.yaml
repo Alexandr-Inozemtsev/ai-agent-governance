@@ -7,6 +7,9 @@ rules:
   - "Пользовательские инструкции формирует ai-technical-writer."
   - "Документация должна быть на русском языке, если проект русскоязычный."
   - "Технические имена файлов, классов, агентов, skills и системных сущностей можно оставлять на английском."
+  - "Technical plans for agents могут быть на английском, если это повышает качество работы agentic workers."
+  - "User-facing summary всегда должен быть на русском языке."
+  - "Если создан English technical plan, обязателен блок user_review_summary_ru."
   - "Документация должна содержать дату, статус, owner, scope, связанные эпики."
   - "Bug reports должны храниться или ссылаться из документации проекта, если project policy требует."
 required_metadata:
@@ -17,3 +20,16 @@ required_metadata:
   - related_epics
 docs_only_rule:
   production_code_changes: blocked
+dual_language_planning:
+  english_technical_plans_allowed:
+    - implementation_plan
+    - architecture_plan
+    - test_plan
+    - test_automation_plan
+    - QA_plan
+    - release_plan
+    - subagent_execution_plan
+    - worker_task_plan
+  russian_user_summary_required: true
+  missing_russian_summary_status: NEEDS_USER_REVIEW_SUMMARY
+  required_summary_block: user_review_summary_ru

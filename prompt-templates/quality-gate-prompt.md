@@ -21,12 +21,23 @@
 - Если manual regression выполнен до проверки автотестов, результат получает policy violation.
 - Если bug закрывается, есть QA verification.
 - Если менялись SimpleRetriever / backend / API, есть unit/integration/regression test results.
+- Если задача large/critical, был decomposition plan.
+- Если required agent missing, его часть не была выполнена.
+- Если был status change, есть `proposed_status_update`.
+- Если изменились сроки/зависимости/блокеры, есть Gantt impact.
+- Если Trello update required, указан `ai-trello-analyst`.
+- Если Gantt update required, указан `ai-delivery-project-manager`.
+- Если task touches existing functionality, учтён QA Automation Gate.
+- Если required autotests failed/missing, QA gate не может быть `PASSED`.
+- Если epic закрывается, нет открытых P0/P1/Critical/High bugs.
+- Если technical plan на английском, есть `user_review_summary_ru`.
+- Если пользователю предоставлен только английский план, результат `BLOCKED` или `NEEDS_USER_REVIEW_SUMMARY`.
 
 ## Ответ
 
 ```json
 {
-  "status": "PASS | FAIL | NEEDS_APPROVAL",
+  "status": "PASS | FAIL | NEEDS_APPROVAL | NEEDS_USER_REVIEW_SUMMARY",
   "failed_checks": [],
   "blocking_policies": [],
   "required_owner_agent": "...",

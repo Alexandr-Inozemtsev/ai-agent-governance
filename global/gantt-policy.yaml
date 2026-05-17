@@ -1,0 +1,69 @@
+policy_version: "1.0"
+owner_agent: ai-delivery-project-manager
+rule: "Gantt является planning/projection layer поверх approved backlog и Trello statuses, а не самостоятельным source of truth."
+
+source_of_truth:
+  product_scope: approved_backlog
+  execution_status: Trello_cards
+  test_automation_status: test_automation_reports
+  QA_status: QA_gate_reports
+  dates_dependencies: delivery_plan_Gantt
+  release_readiness: release_policy
+  quality_status: QA_reports_bug_reports
+
+owners:
+  gantt_delivery_plan: ai-delivery-project-manager
+  scope: ai-product-orchestrator
+  trello_changes: ai-trello-analyst
+  test_automation_status: ai-test-automation-engineer
+  QA_gate_status: ai-qa-engineer
+  release_milestones: ai-release-manager
+
+update_rules:
+  - "Gantt обновляет ai-delivery-project-manager."
+  - "Gantt обновляется при создании approved epic/task."
+  - "Gantt обновляется при изменении dependency или due date."
+  - "Gantt обновляется при появлении или снятии blocker."
+  - "Gantt обновляется при появлении P0/P1/Critical/High bug."
+  - "Gantt обновляется при падении required autotests."
+  - "Gantt обновляется при отсутствии required autotests для release-critical функциональности."
+  - "Gantt обновляется при переходе ключевой задачи в Done."
+  - "Gantt обновляется при изменении release date или scope."
+  - "Gantt обновляется на weekly planning review."
+  - "Gantt не обновляется после каждого мелкого commit, если не меняются сроки, зависимости, блокеры, critical bugs или required autotest status."
+
+gantt_update_cadence:
+  event_driven:
+    - task_approved
+    - blocker_found
+    - blocker_resolved
+    - dependency_changed
+    - release_date_changed
+    - P0_P1_bug_created
+    - required_autotests_failed
+    - required_autotests_missing_for_release_critical_scope
+    - epic_completed
+  regular:
+    active_project_daily_summary: "в конце активной Codex-сессии или рабочего дня"
+    weekly_replan: "1 раз в неделю"
+    pre_release_review: "перед release candidate"
+
+gantt_update_required_fields:
+  - changed_tasks
+  - changed_dates
+  - dependency_changes
+  - blocked_items
+  - test_automation_blockers
+  - QA_gate_blockers
+  - critical_path_impact
+  - release_impact
+  - risks
+  - next_actions
+
+recommended_project_files:
+  - docs/delivery/delivery-status.md
+  - docs/delivery/gantt-plan.md
+  - docs/delivery/dependencies.md
+  - docs/delivery/weekly-status.md
+
+project_policy_override_rule: "Project policy может заменить Gantt внешним инструментом, но обязан указать owner и sync rules."

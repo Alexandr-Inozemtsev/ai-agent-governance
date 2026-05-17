@@ -1,0 +1,101 @@
+policy_version: "1.0"
+owner_agent: ai-product-orchestrator
+rule: "Большие multi-agent задачи сначала декомпозируются, затем выполняются частями с checkpoint и quality gates."
+
+mandatory_decomposition_triggers:
+  agents_count_at_least: 5
+  domains_count_at_least: 3
+  combined_domains:
+    - backend_frontend_database
+  critical_conditions:
+    - security_review
+    - dependency_changes
+    - database_migration
+    - release_deploy
+    - Trello_board_restructuring
+    - Gantt_roadmap_changes
+    - BT_TZ_ADR_implementation_in_one_request
+
+required_decomposition_artifacts:
+  - decomposition_plan
+  - subtasks
+  - owner_agent_per_subtask
+  - required_agents
+  - optional_agents
+  - dependencies
+  - expected_artifacts
+  - Trello_mapping
+  - Gantt_impact
+  - execution_order
+  - parallelization_opportunities
+  - approval_gates
+
+default_hierarchy:
+  parent_task:
+    - "Subtask 1: Analysis"
+    - "Subtask 2: Architecture / ADR"
+    - "Subtask 3: Backend"
+    - "Subtask 4: Frontend"
+    - "Subtask 5: Database"
+    - "Subtask 6: Security"
+    - "Subtask 7: Test Automation"
+    - "Subtask 8: QA Gate"
+    - "Subtask 9: Documentation"
+    - "Subtask 10: Trello update"
+    - "Subtask 11: Gantt update"
+
+task_complexity:
+  simple:
+    agents_count: "1-2"
+    domains_count: "1"
+    execution_mode: inline_allowed
+  medium:
+    agents_count: "3-4"
+    domains_count: "1-2"
+    execution_mode: short_plan_required
+  large:
+    agents_count: "5+"
+    domains_count: "3+"
+    execution_mode: mandatory_decomposition
+  critical:
+    conditions:
+      - security
+      - database_migration
+      - dependency_update
+      - release
+      - production_hotfix
+      - trello_board_restructure
+      - QA_gate
+      - failed_required_autotests
+    execution_mode: mandatory_decomposition_and_approvals
+
+large_critical_blocked_actions:
+  - write_code_immediately
+  - change_Trello_immediately
+  - change_database_immediately
+  - add_dependencies_immediately
+  - perform_release_immediately
+  - execute_entire_task_in_one_agent_run_without_checkpoint
+
+large_critical_required_controls:
+  - preflight
+  - decomposition
+  - ai-product-orchestrator_approval
+  - execution_checkpoints
+  - final_quality_gate
+
+existing_functionality_rules:
+  - "Если задача затрагивает старый/существующий функционал, decomposition включает test automation subtask."
+  - "Если задача затрагивает старый/существующий функционал, decomposition включает QA gate subtask."
+  - "Manual regression subtask идёт после automated tests."
+  - "QA gate не может быть раньше test automation results."
+
+decomposition_output_format:
+  task_decomposition:
+    required: true
+    complexity: "simple | medium | large | critical"
+    parent_task_id: ""
+    subtasks: []
+    execution_order: []
+    parallel_groups: []
+    approval_gates: []

@@ -2,7 +2,7 @@
 
 ## Статус
 
-`READY_FOR_PREFLIGHT`
+`READY_FOR_PREFLIGHT_WITH_DECOMPOSITION_STATUS_SYNC_AND_QA_AUTOMATION_GATE`
 
 Проект AI Discovery Platform подключен к governance-пакету `ai-agent-governance` через project override:
 
@@ -71,6 +71,17 @@
 - Если failed test связан с flaky behavior, сначала создается flaky test report.
 - QA gate не может быть `PASSED` при failed required autotests.
 - Если required autotests отсутствуют, нужен handoff к `ai-test-automation-engineer`; conditional QA gate возможен только по exception от `ai-product-orchestrator` и `ai-qa-engineer`, а для release impact также от `ai-release-manager`.
+
+## Decomposition, status sync и delivery
+
+- Добавлены agent availability rules: preflight проверяет required/optional agents.
+- Добавлены task decomposition rules: большой запрос по AI Discovery Platform теперь сначала превращается в decomposition plan.
+- Trello status owner — `ai-trello-analyst`.
+- Gantt/delivery owner — `ai-delivery-project-manager`.
+- Test automation owner — `ai-test-automation-engineer`.
+- QA gate owner — `ai-qa-engineer`.
+- English technical plan допустим для AI-workers, но русский `user_review_summary_ru` обязателен для пользователя.
+- Large/critical задачи нельзя выполнять одним agent-run без checkpoint и quality gates.
 
 ## Как запускать preflight
 

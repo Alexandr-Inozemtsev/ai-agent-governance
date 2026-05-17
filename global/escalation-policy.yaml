@@ -30,6 +30,24 @@ escalation_required_when:
   - trigger: unclear_owner
     escalate_to: ai-product-orchestrator
     response: NEEDS_ORCHESTRATOR_REVIEW
+  - trigger: missing_required_agent
+    escalate_to: ai-product-orchestrator
+    response: BLOCKED_MISSING_AGENT
+  - trigger: unknown_agent_availability
+    escalate_to: ai-product-orchestrator
+    response: NEEDS_ORCHESTRATOR_REVIEW
+  - trigger: large_or_critical_task_without_decomposition
+    escalate_to: ai-product-orchestrator
+    response: NEEDS_ORCHESTRATOR_REVIEW
+  - trigger: status_sync_owner_missing
+    escalate_to: ai-product-orchestrator
+    response: NEEDS_ORCHESTRATOR_REVIEW
+  - trigger: gantt_update_required
+    escalate_to: ai-delivery-project-manager
+    response: NEEDS_APPROVAL
+  - trigger: english_technical_plan_without_russian_summary
+    escalate_to: ai-product-orchestrator
+    response: NEEDS_USER_REVIEW_SUMMARY
   - trigger: insufficient_input
     escalate_to: ai-product-orchestrator
     response: NEEDS_CLARIFICATION

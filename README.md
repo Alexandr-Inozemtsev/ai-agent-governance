@@ -11,6 +11,10 @@ Governance не должен жить внутри product repo, потому ч
 - `global/agent-registry.yaml` — реестр ролей и зон владения.
 - `global/agent-skill-policy.yaml` — матрица skills, permissions и запретов.
 - `global/agent-routing-policy.yaml` — маршрутизация task types.
+- `global/agent-availability-policy.yaml` — проверка required/optional agents перед выполнением.
+- `global/task-decomposition-policy.yaml` — правила разбиения large/critical multi-agent задач.
+- `global/status-sync-policy.yaml` — владельцы и события синхронизации статусов.
+- `global/gantt-policy.yaml` — правила Gantt/delivery-plan как projection layer.
 - `global/qa-automation-gate-policy.yaml` — automation-first QA gate перед ручным regression существующего функционала.
 - `global/blocked-actions.yaml` — глобальные блокировки.
 - `global/bug-policy.yaml` — правила bug reports и Trello bug cards.
@@ -25,6 +29,25 @@ Governance не должен жить внутри product repo, потому ч
 Для старого или существующего функционала ручной regression начинается только после проверки релевантных автотестов: `Code ready -> automated tests -> QA reviews test results -> manual testing -> QA gate`.
 
 `ai-test-automation-engineer` пишет, поддерживает и анализирует автотесты, но не закрывает QA gate. `ai-qa-engineer` проверяет automated test results, выполняет ручное acceptance/regression/exploratory testing и принимает QA gate. Если required autotests failed или missing без documented exception, QA gate не может быть `PASSED`.
+
+## Большие задачи, Trello, Gantt, автотесты и язык планов
+
+Большие задачи разбиваются до выполнения. Decomposition обязателен, если запрос требует 5+ агентов, 3+ зон ответственности, backend + frontend + database, security review, dependency changes, DB migration, release/deploy, Trello/Gantt/roadmap changes или QA gate.
+
+Trello обновляется по событиям и только владельцем `ai-trello-analyst`: task started, code review requested, automated tests started/failed/passed, qa started/failed/passed, blocker found/resolved, done. Остальные агенты возвращают `proposed_status_update` с evidence.
+
+Gantt обновляет `ai-delivery-project-manager`. Он обновляется по событиям, которые влияют на сроки, dependencies, blockers, P0/P1/Critical/High bugs, failed/missing required autotests, release date или scope, а также регулярно: в конце активной Codex-сессии/рабочего дня, еженедельно и перед release candidate.
+
+Английские technical plans допустимы для AI-workers: implementation, architecture, test automation, QA, release и worker task plans. Для пользователя всегда обязателен русский `user_review_summary_ru`; пользователь подтверждает только русскоязычное summary.
+
+Owners процесса:
+
+- Scope и decomposition: `ai-product-orchestrator`.
+- Trello status: `ai-trello-analyst`.
+- Gantt/delivery status: `ai-delivery-project-manager`.
+- Test automation status: `ai-test-automation-engineer`.
+- QA status / QA gate: `ai-qa-engineer`.
+- Release status: `ai-release-manager`.
 
 ## Подключённые проекты
 

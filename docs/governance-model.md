@@ -23,3 +23,23 @@
 `Code ready -> automated tests -> QA reviews test results -> manual testing -> QA gate`
 
 `ai-test-automation-engineer` пишет, поддерживает, запускает или описывает автотесты и передает `test_results` в QA. `ai-qa-engineer` проверяет результаты автотестов перед ручным regression testing. Если required autotests failed, ручное тестирование может продолжаться только для defect confirmation, exploratory analysis или evidence collection, но QA gate не может быть `PASSED`.
+
+## Большие multi-agent задачи
+
+Большой запрос не выполняется одним agent-run. `ai-product-orchestrator` сначала определяет complexity, required/optional agents, доступность агентов, dependencies, Trello mapping, Gantt impact и approval gates. Large/critical задачи превращаются в decomposition plan с подзадачами: analysis, architecture/ADR, backend, frontend, database, security, test automation, QA gate, documentation, Trello update и Gantt update.
+
+Запрос разбивается, если требует 5+ агентов, 3+ зон ответственности, одновременно backend + frontend + database, security review, dependency changes, database migration, release/deploy, Trello restructuring, Gantt/roadmap changes или создание BT + TZ + ADR + implementation в одном запросе.
+
+Если required agent недоступен, принадлежащая ему часть блокируется и возвращается `BLOCKED_MISSING_AGENT` или `NEEDS_ORCHESTRATOR_REVIEW`. Если optional agent недоступен, разрешается partial execution с явным risk и status `PARTIAL_ALLOWED`.
+
+## Status Sync, Trello и Gantt
+
+Trello обновляет только `ai-trello-analyst`, кроме project-policy exceptions. Остальные агенты возвращают `proposed_status_update` с evidence, checklist updates, bug updates, test automation updates, QA gate updates и target owner.
+
+Gantt/delivery-plan обновляет `ai-delivery-project-manager`. Gantt не является независимой правдой: scope берётся из approved backlog, execution status из Trello, test automation status из reports, QA status из QA gate reports, даты и зависимости из delivery plan.
+
+Gantt обновляется по событиям: task approved, dependency changed, blocker found/resolved, P0/P1/Critical/High bug, failed required autotests, missing required autotests для release-critical scope, epic completed, release date changed. Регулярно Gantt обновляется в конце активной Codex-сессии/рабочего дня, раз в неделю и перед release candidate.
+
+## Язык планов
+
+Английский technical plan допустим для AI-workers, если это повышает качество implementation, architecture, test automation, QA или release planning. Пользователь подтверждает только русскоязычный `user_review_summary_ru`, где указаны цель, scope, changed/not changed, risks, tests, test automation status, QA gate status и next step.

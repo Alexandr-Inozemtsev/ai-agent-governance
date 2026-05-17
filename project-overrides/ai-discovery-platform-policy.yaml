@@ -115,6 +115,89 @@ documentation_rules:
 release_rules:
   inherit_global_release_policy: true
 
+agent_availability_rules:
+  preflight_required: true
+  check_required_agents: true
+  check_optional_agents: true
+  missing_required_agent_blocks_owned_part: true
+  missing_optional_agent_allows_partial: true
+  report_missing_agents: true
+
+task_decomposition_rules:
+  decomposition_required_for_large_tasks: true
+  large_task_agents_threshold: 5
+  large_task_domains_threshold: 3
+  critical_conditions:
+    - security
+    - database_migration
+    - dependency_update
+    - release
+    - production_hotfix
+    - trello_board_restructure
+    - QA_gate
+    - failed_required_autotests
+  implementation_requires_checkpoint_plan: true
+  code_execution_for_large_task_without_decomposition: blocked
+
+status_sync_rules:
+  trello_status_owner: ai-trello-analyst
+  delivery_status_owner: ai-delivery-project-manager
+  test_automation_status_owner: ai-test-automation-engineer
+  qa_status_owner: ai-qa-engineer
+  release_status_owner: ai-release-manager
+  agents_can_only_propose_status_update: true
+  trello_updates_require_evidence: true
+  status_sync_events:
+    - task_started
+    - implementation_completed
+    - automated_tests_started
+    - automated_tests_failed
+    - automated_tests_passed
+    - code_review_requested
+    - qa_started
+    - qa_failed
+    - qa_passed
+    - blocker_found
+    - blocker_resolved
+    - bug_created
+    - bug_verified
+    - done
+
+gantt_rules:
+  gantt_owner: ai-delivery-project-manager
+  gantt_is_projection_layer: true
+  gantt_source_of_truth:
+    product_scope: approved_backlog
+    execution_status: Trello
+    test_automation_status: test_automation_reports
+    QA_status: QA_gate_reports
+    dates_dependencies: delivery_plan
+  update_on_events:
+    - task_approved
+    - dependency_changed
+    - blocker_found
+    - blocker_resolved
+    - P0_P1_bug_created
+    - required_autotests_failed
+    - required_autotests_missing_for_release_critical_scope
+    - epic_completed
+    - release_date_changed
+  regular_update:
+    active_project_daily_summary: "в конце активной Codex-сессии или рабочего дня"
+    weekly_replan: "1 раз в неделю"
+  project_delivery_docs:
+    - docs/delivery/delivery-status.md
+    - docs/delivery/gantt-plan.md
+    - docs/delivery/dependencies.md
+    - docs/delivery/weekly-status.md
+
+language_rules:
+  user_facing_language: ru
+  technical_plans_for_agents_language: en_allowed
+  russian_user_summary_required: true
+  english_plan_without_russian_summary: blocked
+  required_user_summary_block: user_review_summary_ru
+
 bug_rules:
   ai_qa_engineer_can_create_bug_report: true
   ai_trello_analyst_creates_trello_bug_card: true

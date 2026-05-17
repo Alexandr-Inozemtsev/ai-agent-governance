@@ -38,6 +38,54 @@ task_types:
     default_trello_list: "Discovery"
     handoff_rules: "Сначала БТ, затем ТЗ, затем архитектура."
     quality_gate_required: true
+  task_decomposition:
+    owner_agent: ai-product-orchestrator
+    contributor_agents: [ai-delivery-project-manager, ai-test-automation-engineer, ai-qa-engineer, ai-solution-architect, ai-backend-developer, ai-frontend-developer, ai-database-engineer, ai-security-engineer, ai-technical-writer]
+    required_approvals: [ai-product-orchestrator]
+    required_input_artifacts: [user_request, project_policy, agent_availability_check]
+    output_artifacts: [decomposition_plan, subtasks, required_agents, optional_agents, execution_order, approval_gates]
+    allowed_actions: [classify_complexity, split_into_subtasks, assign_owner_agents, define_dependencies, define_checkpoints]
+    blocked_actions: [write_code_before_decomposition, modify_Trello_directly, modify_database, add_dependencies, release_deploy]
+    default_trello_list: "Discovery"
+    handoff_rules:
+      - "Если задача требует автотестов, добавить ai-test-automation-engineer в required_agents."
+      - "Если задача требует QA gate, добавить ai-qa-engineer в required_agents."
+      - "Для существующего функционала test automation subtask должен идти до manual regression и QA gate."
+      - "Профильные owner agents выбираются по affected areas."
+    quality_gate_required: true
+  status_sync:
+    owner_agent: ai-trello-analyst
+    contributor_agents: [ai-product-orchestrator, ai-delivery-project-manager, ai-test-automation-engineer, ai-qa-engineer]
+    required_approvals: [ai-trello-analyst]
+    required_input_artifacts: [proposed_status_update, evidence]
+    output_artifacts: [trello_status_update, checklist_update, card_comment]
+    allowed_actions: [apply_approved_trello_status_update, update_checklist, add_card_comment]
+    blocked_actions: [change_scope_without_orchestrator, move_done_without_QA_review, move_done_with_failed_required_autotests]
+    default_trello_list: "depends_on_status"
+    handoff_rules: "Все агенты предлагают status update; Trello применяет только ai-trello-analyst."
+    quality_gate_required: true
+  gantt_update:
+    owner_agent: ai-delivery-project-manager
+    contributor_agents: [ai-product-orchestrator, ai-trello-analyst, ai-test-automation-engineer, ai-qa-engineer, ai-release-manager]
+    required_approvals: [ai-delivery-project-manager]
+    required_input_artifacts: [delivery_status_update, proposed_status_update]
+    output_artifacts: [gantt_plan_update, delivery_status_update]
+    allowed_actions: [update_delivery_plan, update_dependencies, update_risks, report_release_impact]
+    blocked_actions: [change_product_scope, mutate_Trello_directly, approve_release]
+    default_trello_list: "Delivery"
+    handoff_rules: "Gantt обновляется как projection layer; Trello changes идут через ai-trello-analyst."
+    quality_gate_required: true
+  delivery_status_report:
+    owner_agent: ai-delivery-project-manager
+    contributor_agents: [ai-product-orchestrator, ai-test-automation-engineer, ai-qa-engineer, ai-release-manager]
+    required_approvals: [ai-delivery-project-manager]
+    required_input_artifacts: [delivery_scope, latest_status_updates]
+    output_artifacts: [daily_status, weekly_status, risks, blockers, test_automation_status, QA_gate_status]
+    allowed_actions: [summarize_delivery_status, report_blockers, report_risks, recommend_replan]
+    blocked_actions: [change_scope_without_orchestrator, mutate_Trello_directly, close_QA_gate]
+    default_trello_list: "Delivery"
+    handoff_rules: "Delivery report использует test automation и QA gate reports как входные данные."
+    quality_gate_required: true
   business_requirements:
     owner_agent: ai-business-analyst
     contributor_agents: [ai-product-orchestrator, ai-monetization-strategist]

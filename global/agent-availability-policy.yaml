@@ -1,0 +1,65 @@
+policy_version: "1.0"
+owner_agent: ai-product-orchestrator
+rule: "Перед выполнением задачи preflight обязан проверить доступность required_agents и optional_agents."
+
+agent_availability_statuses:
+  - AGENT_AVAILABLE
+  - AGENT_MISSING_REQUIRED
+  - AGENT_MISSING_OPTIONAL
+  - PARTIAL_ALLOWED
+  - BLOCKED_MISSING_AGENT
+  - NEEDS_ORCHESTRATOR_REVIEW
+
+agent_types:
+  required_agents: "Агенты, без которых нельзя выполнить принадлежащую им часть задачи или закрыть gate."
+  optional_agents: "Агенты, которые улучшают результат, но их отсутствие не блокирует разрешённую часть."
+
+rules:
+  - "Если отсутствует required agent, запрещено выполнять часть задачи, которой этот агент владеет."
+  - "Если отсутствует optional agent, можно выполнить разрешённую часть, но результат получает статус PARTIAL или NEEDS_REVIEW."
+  - "Если owner agent не определён, задача возвращается ai-product-orchestrator."
+  - "Если agent availability неизвестна, preflight явно указывает uncertainty."
+  - "Любой missing required agent отражается в output contract."
+  - "Если задача требует автотестов, required agent = ai-test-automation-engineer."
+  - "Если задача требует QA gate, required agent = ai-qa-engineer."
+  - "Если задача требует и автотесты, и QA gate, required_agents включают ai-test-automation-engineer и ai-qa-engineer."
+
+partial_execution_rules:
+  allowed_when:
+    - "missing agents являются optional"
+    - "blocked_task_parts явно отделены от allowed_task_parts"
+    - "нет обхода owner responsibility"
+  required_output_status:
+    - PARTIAL_ALLOWED
+    - NEEDS_ORCHESTRATOR_REVIEW
+  prohibited_when:
+    - "missing required agent владеет critical gate"
+    - "нет owner agent"
+    - "нет evidence для allowed_task_parts"
+
+handoff_rules:
+  required_agent_missing: "Вернуть next_required_handoff и не выполнять owned part."
+  optional_agent_missing: "Отразить risk и recommended_next_step."
+  unknown_availability: "Вернуть NEEDS_ORCHESTRATOR_REVIEW с uncertainty."
+
+blocked_execution_rules:
+  status: BLOCKED_MISSING_AGENT
+  applies_when:
+    - owner_agent_missing
+    - required_QA_gate_owner_missing
+    - required_test_automation_owner_missing
+    - required_release_owner_missing
+    - required_security_owner_missing
+
+missing_agents_report_format:
+  agent_availability_check:
+    status: "AGENT_AVAILABLE | AGENT_MISSING_REQUIRED | AGENT_MISSING_OPTIONAL | PARTIAL_ALLOWED | BLOCKED_MISSING_AGENT | NEEDS_ORCHESTRATOR_REVIEW"
+    required_agents: []
+    optional_agents: []
+    available_agents: []
+    missing_required_agents: []
+    missing_optional_agents: []
+    blocked_task_parts: []
+    allowed_task_parts: []
+    next_required_handoff: []
+    recommended_next_step: ""

@@ -37,6 +37,68 @@
 }
 ```
 
+## Дополнительные поля orchestration / decomposition / status sync
+
+```yaml
+agent_availability_check:
+  required_agents: []
+  optional_agents: []
+  available_agents: []
+  missing_required_agents: []
+  missing_optional_agents: []
+  blocked_due_to_missing_agents: false
+  partial_execution_allowed: false
+  next_required_handoff: []
+
+task_decomposition:
+  required: false
+  complexity: "simple | medium | large | critical"
+  parent_task_id: ""
+  subtasks: []
+  execution_order: []
+  parallel_groups: []
+  approval_gates: []
+
+proposed_status_update:
+  source_agent: ""
+  task_id: ""
+  parent_epic_id: ""
+  previous_status: ""
+  proposed_status: ""
+  reason: ""
+  evidence: []
+  checklist_updates: []
+  bug_updates: []
+  test_automation_updates: []
+  QA_gate_updates: []
+  risk_updates: []
+  gantt_impact: ""
+  required_approvals: []
+  target_owner_agent: ""
+
+delivery_status_update:
+  gantt_update_required: false
+  delivery_plan_changed: false
+  dependency_changes: []
+  blocker_changes: []
+  test_automation_blockers: []
+  QA_gate_blockers: []
+  release_impact: ""
+  next_delivery_review: ""
+
+user_review_summary_ru:
+  goal: ""
+  scope: ""
+  changed_files: []
+  not_changed: []
+  risks: []
+  tests: []
+  test_automation_status: ""
+  QA_gate_status: ""
+  required_user_check: []
+  next_step: ""
+```
+
 ## Дополнительные поля для bug report
 
 ```json

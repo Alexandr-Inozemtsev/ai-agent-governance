@@ -1,0 +1,272 @@
+policy_version: "1.0"
+owner_agent: ai-trello-analyst
+scope_owner_agent: ai-product-orchestrator
+delivery_status_owner: ai-delivery-project-manager
+test_automation_status_owner: ai-test-automation-engineer
+qa_status_owner: ai-qa-engineer
+release_status_owner: ai-release-manager
+code_review_status_owner: ai-code-reviewer
+rule: "Статусы меняются только владельцами статуса; остальные агенты возвращают proposed_status_update."
+
+source_of_truth:
+  product_scope: approved_backlog
+  execution_status: Trello
+  bug_status: bug_reports_and_Trello
+  test_automation_status: test_automation_reports
+  QA_status: QA_gate_reports
+  delivery_status: delivery_plan_or_Gantt
+  release_status: release_policy
+
+status_owner_rules:
+  - "Trello-статусы меняет только ai-trello-analyst, кроме project-policy exceptions."
+  - "Остальные агенты не меняют Trello напрямую и возвращают proposed_trello_update/proposed_status_update."
+  - "ai-product-orchestrator утверждает изменение scope/status, если оно влияет на backlog, epic или roadmap."
+  - "ai-delivery-project-manager отвечает за delivery status и Gantt impact."
+  - "ai-test-automation-engineer отвечает за automated test status."
+  - "ai-qa-engineer отвечает за QA status, QA gate и bug reports."
+  - "ai-release-manager отвечает за release status."
+  - "ai-code-reviewer отвечает за code review status."
+
+status_sync_events:
+  task_approved:
+    triggering_agent: ai-product-orchestrator
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "Backlog -> Ready/Approved"
+    required_evidence: [approved_scope, acceptance_criteria]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  task_started:
+    triggering_agent: owner_agent
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "Ready -> In Progress"
+    required_evidence: [approved_task, owner_agent]
+    trello_update_required: true
+    gantt_update_required: false
+    notification_required: true
+  implementation_completed:
+    triggering_agent: implementation_owner
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "In Progress -> Code Review/Test Automation"
+    required_evidence: [changed_files, implementation_summary]
+    trello_update_required: true
+    gantt_update_required: false
+    notification_required: true
+  automated_tests_requested:
+    triggering_agent: ai-qa-engineer
+    required_owner: ai-test-automation-engineer
+    allowed_status_transition: "Implementation Done -> Automated Tests Requested"
+    required_evidence: [test_scope, acceptance_criteria]
+    trello_update_required: true
+    gantt_update_required: false
+    notification_required: true
+  automated_tests_started:
+    triggering_agent: ai-test-automation-engineer
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "Automated Tests Requested -> Automated Tests Running"
+    required_evidence: [test_commands]
+    trello_update_required: true
+    gantt_update_required: false
+    notification_required: true
+  automated_tests_passed:
+    triggering_agent: ai-test-automation-engineer
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "Automated Tests Running -> QA Ready"
+    required_evidence: [test_results]
+    trello_update_required: true
+    gantt_update_required: false
+    notification_required: true
+  automated_tests_failed:
+    triggering_agent: ai-test-automation-engineer
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "Automated Tests Running -> Blocked/Needs Fix"
+    required_evidence: [failed_tests, bug_or_flaky_report]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  automated_tests_flaky:
+    triggering_agent: ai-test-automation-engineer
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "Automated Tests Running -> Needs Test Automation Review"
+    required_evidence: [flaky_test_report]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  QA_gate_started:
+    triggering_agent: ai-qa-engineer
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "QA Ready -> QA In Progress"
+    required_evidence: [QA_plan, automated_test_results_if_required]
+    trello_update_required: true
+    gantt_update_required: false
+    notification_required: true
+  manual_testing_started:
+    triggering_agent: ai-qa-engineer
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "QA In Progress -> Manual Testing"
+    required_evidence: [qa_automation_gate]
+    trello_update_required: true
+    gantt_update_required: false
+    notification_required: true
+  code_review_requested:
+    triggering_agent: implementation_owner
+    required_owner: ai-code-reviewer
+    allowed_status_transition: "Implementation Done -> Code Review"
+    required_evidence: [changed_files, review_scope]
+    trello_update_required: true
+    gantt_update_required: false
+    notification_required: true
+  code_review_passed:
+    triggering_agent: ai-code-reviewer
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "Code Review -> QA Ready"
+    required_evidence: [review_findings, approval]
+    trello_update_required: true
+    gantt_update_required: false
+    notification_required: true
+  code_review_failed:
+    triggering_agent: ai-code-reviewer
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "Code Review -> Needs Fix"
+    required_evidence: [review_findings]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  qa_started:
+    triggering_agent: ai-qa-engineer
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "QA Ready -> QA In Progress"
+    required_evidence: [QA_scope]
+    trello_update_required: true
+    gantt_update_required: false
+    notification_required: true
+  qa_passed:
+    triggering_agent: ai-qa-engineer
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "QA In Progress -> Done/Release Ready"
+    required_evidence: [QA_gate_result]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  qa_failed:
+    triggering_agent: ai-qa-engineer
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "QA In Progress -> Needs Fix/Blocked"
+    required_evidence: [QA_gate_result, bug_reports]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  bug_created:
+    triggering_agent: ai-qa-engineer
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "Any -> Bug Open/Blocked if critical"
+    required_evidence: [bug_report, parent_link]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  bug_fixed:
+    triggering_agent: affected_developer_agent
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "Bug Open -> QA Verification"
+    required_evidence: [fix_summary, changed_files]
+    trello_update_required: true
+    gantt_update_required: false
+    notification_required: true
+  bug_verified:
+    triggering_agent: ai-qa-engineer
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "QA Verification -> Bug Done"
+    required_evidence: [QA_verification]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  blocker_found:
+    triggering_agent: any_owner_agent
+    required_owner: ai-delivery-project-manager
+    allowed_status_transition: "Any -> Blocked"
+    required_evidence: [blocker_reason, impact]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  blocker_resolved:
+    triggering_agent: blocker_owner
+    required_owner: ai-delivery-project-manager
+    allowed_status_transition: "Blocked -> Previous/Ready"
+    required_evidence: [resolution_evidence]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  dependency_changed:
+    triggering_agent: ai-product-orchestrator
+    required_owner: ai-delivery-project-manager
+    allowed_status_transition: "Dependency graph update"
+    required_evidence: [dependency_change_reason]
+    trello_update_required: false
+    gantt_update_required: true
+    notification_required: true
+  scope_changed:
+    triggering_agent: ai-product-orchestrator
+    required_owner: ai-product-orchestrator
+    allowed_status_transition: "Backlog/Roadmap update"
+    required_evidence: [scope_decision]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  epic_ready_for_done:
+    triggering_agent: ai-qa-engineer
+    required_owner: ai-trello-analyst
+    allowed_status_transition: "Epic QA Passed -> Epic Done"
+    required_evidence: [QA_pass, no_open_P0_P1_Critical_High_bugs]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  release_candidate_created:
+    triggering_agent: ai-release-manager
+    required_owner: ai-release-manager
+    allowed_status_transition: "Release Planning -> Release Candidate"
+    required_evidence: [release_candidate_scope]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  release_approved:
+    triggering_agent: ai-release-manager
+    required_owner: ai-release-manager
+    allowed_status_transition: "Release Candidate -> Release Approved"
+    required_evidence: [QA_pass, security_pass, release_decision]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  release_blocked:
+    triggering_agent: ai-release-manager
+    required_owner: ai-release-manager
+    allowed_status_transition: "Release Candidate -> Release Blocked"
+    required_evidence: [blocking_reason]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+  release_done:
+    triggering_agent: ai-release-manager
+    required_owner: ai-release-manager
+    allowed_status_transition: "Release Approved -> Released"
+    required_evidence: [release_notes, deployment_confirmation]
+    trello_update_required: true
+    gantt_update_required: true
+    notification_required: true
+
+proposed_status_update_format:
+  proposed_status_update:
+    source_agent: ""
+    task_id: ""
+    parent_epic_id: ""
+    previous_status: ""
+    proposed_status: ""
+    reason: ""
+    evidence: []
+    checklist_updates: []
+    bug_updates: []
+    test_automation_updates: []
+    QA_gate_updates: []
+    risk_updates: []
+    gantt_impact: ""
+    required_approvals: []
+    target_owner_agent: ""

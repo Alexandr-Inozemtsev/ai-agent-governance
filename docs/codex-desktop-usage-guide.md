@@ -33,3 +33,18 @@ QA использует `prompt-templates/bug-report-template.md`. Trello bug ca
 Перед ручным тестированием старого функционала сначала прогнать или проверить релевантные автотесты. Например: "Перед ручным regression Problem generation проверь unit/integration/regression результаты SimpleRetriever; если failed или missing, не ставь QA gate PASSED и передай `ai-test-automation-engineer`."
 
 `ai-qa-engineer` может продолжить ручную проверку при failed autotests только для defect confirmation, evidence collection или exploratory analysis. Такой результат не закрывает QA gate.
+
+## Практический сценарий большой задачи
+
+1. Пользователь даёт большой запрос, например backend + frontend + DB + security + QA.
+2. `ai-product-orchestrator` определяет `complexity = large`.
+3. Orchestrator создаёт decomposition plan с owner agents, dependencies, Trello mapping, Gantt impact и approval gates.
+4. Orchestrator не пишет код сразу и не меняет Trello/Gantt напрямую.
+5. Пользователь проверяет русское `user_review_summary_ru`.
+6. После approval задачи выполняются частями с checkpoint.
+7. Автотесты выполняет или анализирует `ai-test-automation-engineer`.
+8. QA gate выполняет `ai-qa-engineer`.
+9. Trello обновляет `ai-trello-analyst` по `proposed_status_update`.
+10. Gantt обновляет `ai-delivery-project-manager`, если изменились сроки, dependencies, blockers, critical bugs, release impact или required autotest status.
+
+English technical plans допустимы для AI-workers, но пользовательское summary всегда должно быть на русском языке.

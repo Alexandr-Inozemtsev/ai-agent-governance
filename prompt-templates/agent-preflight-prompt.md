@@ -7,6 +7,7 @@
 - `BLOCKED`
 - `NEEDS_APPROVAL`
 - `NEEDS_CLARIFICATION`
+- `NEEDS_USER_REVIEW_SUMMARY`
 
 ## Проверки
 
@@ -31,14 +32,64 @@
     - есть ли automated test results;
     - можно ли начинать manual testing;
     - требуется ли handoff к `ai-test-automation-engineer`.
+16. Agent Availability Check:
+    - определены ли required_agents и optional_agents;
+    - доступен ли owner agent;
+    - missing required agent блокирует принадлежащую ему часть;
+    - missing optional agent допускает partial execution с risk/NEEDS_REVIEW;
+    - если availability неизвестна, явно указать uncertainty.
+17. Task Complexity Check:
+    - simple: 1-2 агента, 1 домен, inline allowed;
+    - medium: 3-4 агента, 1-2 домена, short plan required;
+    - large: 5+ агентов или 3+ домена, mandatory decomposition;
+    - critical: security/database_migration/dependency_update/release/production_hotfix/trello_board_restructure/QA_gate/failed_required_autotests.
+18. Multi-Agent Decomposition Check:
+    - large/critical задачи требуют decomposition plan;
+    - нельзя сразу писать код, менять Trello/БД/dependencies/release;
+    - для existing functionality включить test automation subtask и QA gate subtask.
+19. Status Sync Impact Check:
+    - нужен ли proposed_status_update;
+    - кто target_owner_agent;
+    - Trello status owner = `ai-trello-analyst`.
+20. Gantt Impact Check:
+    - меняются ли сроки, dependencies, blockers, release impact, P0/P1 bugs, required autotest status;
+    - Gantt owner = `ai-delivery-project-manager`.
+21. Dual-Language Planning Check:
+    - если создан English technical plan, есть ли русский `user_review_summary_ru`;
+    - если русского summary нет, статус `NEEDS_USER_REVIEW_SUMMARY`.
+22. QA Automation Gate Awareness Check:
+    - test automation owner = `ai-test-automation-engineer`;
+    - QA gate owner = `ai-qa-engineer`;
+    - required autotests failed/missing блокируют QA pass.
 
 ## Ответ
 
 ```json
 {
-  "status": "ALLOWED | PARTIAL_ALLOWED | BLOCKED | NEEDS_APPROVAL | NEEDS_CLARIFICATION",
+  "preflight_status": "ALLOWED | PARTIAL_ALLOWED | BLOCKED | NEEDS_APPROVAL | NEEDS_CLARIFICATION | NEEDS_USER_REVIEW_SUMMARY",
   "agent": "ai-...",
   "task_type": "...",
+  "task_complexity": "simple | medium | large | critical",
+  "decomposition_required": true,
+  "agent_availability_status": "...",
+  "required_agents": [],
+  "optional_agents": [],
+  "available_agents": [],
+  "missing_required_agents": [],
+  "missing_optional_agents": [],
+  "blocked_task_parts": [],
+  "allowed_task_parts": [],
+  "trello_update_required": true,
+  "gantt_update_required": true,
+  "status_sync_owner": "ai-trello-analyst",
+  "gantt_owner": "ai-delivery-project-manager",
+  "test_automation_owner": "ai-test-automation-engineer",
+  "QA_gate_owner": "ai-qa-engineer",
+  "qa_automation_gate_required": true,
+  "english_technical_plan_allowed": true,
+  "russian_user_summary_required": true,
+  "user_review_summary_ru_present": true,
+  "recommended_execution_mode": "inline | split_requests | subagent_driven | blocked",
   "allowed_actions": [],
   "blocked_actions": [],
   "required_approvals": [],
