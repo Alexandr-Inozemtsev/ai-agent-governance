@@ -175,6 +175,54 @@ agents:
     can_delegate: false
     allowed_output_types: [test_plan, bug_report, QA_gate_result, verification_report]
     forbidden_output_types: [scope_change, production_code_patch, release_deploy]
+  - id: ai-test-automation-engineer
+    display_name: "AI Test Automation Engineer"
+    role: "Автоматизация тестирования"
+    primary_responsibility: "Unit, integration, API, e2e, mocks, fixtures, regression tests, test automation infrastructure, flaky test analysis, CI test commands, coverage analysis."
+    owns:
+      - unit_tests
+      - integration_tests
+      - API_tests
+      - e2e_tests
+      - mocks
+      - fixtures
+      - regression_tests
+      - test_automation_infrastructure
+      - flaky_test_analysis
+      - CI_test_commands
+      - coverage_analysis
+    contributes_to:
+      - QA_gates
+      - regression_analysis
+      - release_readiness
+      - bug_reports
+      - test_strategy
+    cannot_own:
+      - product_scope
+      - QA_gate_final_approval
+      - bug_QA_verification
+      - release_decision
+      - production_deploy
+      - final_backlog
+      - Trello_board_mutation
+    default_mode: test_automation
+    requires_orchestrator_assignment: true
+    can_delegate: false
+    allowed_output_types:
+      - test_patch
+      - test_automation_plan
+      - test_results
+      - coverage_report
+      - flaky_test_report
+      - bug_report
+      - regression_suite_update
+    forbidden_output_types:
+      - product_scope_change
+      - release_decision
+      - direct_deploy
+      - final_backlog
+      - Trello_mutation
+      - QA_gate_final_approval
   - id: ai-code-reviewer
     display_name: "AI Code Reviewer"
     role: "Code review"

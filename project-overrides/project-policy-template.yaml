@@ -5,7 +5,8 @@ repository: ""
 domain_policy: ""
 trello_board: ""
 rule: "Project override не может ослаблять global policy. Если project override конфликтует с global policy, побеждает global policy."
-allowed_agents: []
+allowed_agents:
+  - ai-test-automation-engineer
 disabled_agents: []
 allowed_skills_override:
   allow_extra_skills: []
@@ -53,3 +54,20 @@ bug_rules:
   requires_qa_verification_to_close: true
   requires_security_review_for_security_bug: true
   requires_release_review_for_release_blocker: true
+
+test_automation_rules:
+  owner: ai-test-automation-engineer
+  qa_gate_owner: ai-qa-engineer
+  can_modify_test_code: true
+  can_modify_production_code: false
+  allowed_test_types:
+    - unit
+    - integration
+    - API
+    - e2e
+    - mocks
+    - regression
+  bug_report_on_failed_automation: true
+  cannot_close_bug_without_qa_verification: true
+  cannot_change_scope: true
+  ci_test_changes_require_devops_approval: true

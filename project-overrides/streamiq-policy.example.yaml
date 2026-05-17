@@ -4,7 +4,7 @@ project_name: "StreamIQ"
 repository: "C:/Projects/StreamIQ"
 domain_policy: "domains/analytics-platform-policy.yaml"
 trello_board: "<StreamIQ board URL>"
-allowed_agents: [ai-product-orchestrator, ai-business-analyst, ai-system-analyst, ai-data-metrics-engineer, ai-backend-developer, ai-frontend-developer, ai-database-engineer, ai-security-engineer, ai-qa-engineer, ai-trello-analyst, ai-release-manager, ai-code-reviewer]
+allowed_agents: [ai-product-orchestrator, ai-business-analyst, ai-system-analyst, ai-data-metrics-engineer, ai-backend-developer, ai-frontend-developer, ai-database-engineer, ai-security-engineer, ai-qa-engineer, ai-test-automation-engineer, ai-trello-analyst, ai-release-manager, ai-code-reviewer]
 disabled_agents: []
 security_notes:
   - "Dashboards with user/company data require security review."
@@ -24,3 +24,13 @@ bug_rules:
   required_bug_labels: ["Баг", "QA", "Analytics", "Data", "Backend", "Frontend"]
   bug_id_format: "БАГ-ЭПИК-{epic_number}-{sequence}"
   requires_security_review_for_security_bug: true
+test_automation_rules:
+  owner: ai-test-automation-engineer
+  qa_gate_owner: ai-qa-engineer
+  can_modify_test_code: true
+  can_modify_production_code: false
+  allowed_test_types: [unit, integration, API, e2e, mocks, regression]
+  bug_report_on_failed_automation: true
+  cannot_close_bug_without_qa_verification: true
+  cannot_change_scope: true
+  ci_test_changes_require_devops_approval: true

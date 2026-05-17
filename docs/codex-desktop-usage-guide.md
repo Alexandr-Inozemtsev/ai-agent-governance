@@ -23,3 +23,7 @@
 ## Как создавать bug reports
 
 QA использует `prompt-templates/bug-report-template.md`. Trello bug card создается только с parent epic/task/PR/incident и по project policy.
+
+## Как запускать test automation
+
+Для задач вида "добавь автотесты", "обнови e2e", "проверь coverage" или "разбери flaky test" preflight должен выбирать `task_type: test_automation` и owner `ai-test-automation-engineer`. Результат автотестов передается `ai-qa-engineer`; сам test automation не закрывает QA gate и не закрывает bugs.

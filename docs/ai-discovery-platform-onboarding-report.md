@@ -29,6 +29,7 @@
 - `ai-security-engineer`
 - `ai-devops-engineer`
 - `ai-qa-engineer`
+- `ai-test-automation-engineer`
 - `ai-code-reviewer`
 - `ai-release-manager`
 - `ai-technical-writer`
@@ -50,12 +51,22 @@
 ## Правила по багам
 
 - `ai-qa-engineer` может создавать bug report.
+- `ai-test-automation-engineer` может создавать bug report, если failed automation test выявил дефект.
 - Trello bug card создает только `ai-trello-analyst`.
 - QA не может напрямую создавать Trello bug card.
 - Bug card требует parent epic.
 - Parent epic должен вести checklist `Баги / дефекты`.
 - Epic нельзя закрыть при открытых P0/P1/Critical/High bugs.
 - Bug нельзя закрыть без QA verification.
+
+## Test automation
+
+- `ai-test-automation-engineer` подключён к AI Discovery Platform.
+- Агент отвечает за автотесты backend/frontend/API/e2e.
+- QA gate остается за `ai-qa-engineer`.
+- Для `SimpleRetriever` автотесты должны покрывать unit, integration и regression сценарии.
+- Failed tests могут создавать bug report, но `ai-test-automation-engineer` не закрывает bug.
+- Если failed test связан с flaky behavior, сначала создается flaky test report.
 
 ## Как запускать preflight
 

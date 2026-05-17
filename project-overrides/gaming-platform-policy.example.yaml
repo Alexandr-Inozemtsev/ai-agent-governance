@@ -4,7 +4,7 @@ project_name: "gaming_platform"
 repository: "C:/Projects/gaming_platform"
 domain_policy: "domains/game-platform-policy.yaml"
 trello_board: "<gaming_platform board URL>"
-allowed_agents: [ai-product-orchestrator, ai-system-analyst, ai-solution-architect, ai-frontend-developer, ai-backend-developer, ai-security-engineer, ai-qa-engineer, ai-performance-engineer, ai-monetization-strategist, ai-trello-analyst, ai-release-manager]
+allowed_agents: [ai-product-orchestrator, ai-system-analyst, ai-solution-architect, ai-frontend-developer, ai-backend-developer, ai-security-engineer, ai-qa-engineer, ai-test-automation-engineer, ai-performance-engineer, ai-monetization-strategist, ai-trello-analyst, ai-release-manager]
 disabled_agents: []
 security_notes:
   - "Payments/store/multiplayer changes require security review."
@@ -25,3 +25,13 @@ bug_rules:
   required_bug_labels: ["Баг", "QA", "Gameplay", "Performance", "Backend", "Frontend"]
   bug_id_format: "БАГ-ЭПИК-{epic_number}-{sequence}"
   requires_release_review_for_release_blocker: true
+test_automation_rules:
+  owner: ai-test-automation-engineer
+  qa_gate_owner: ai-qa-engineer
+  can_modify_test_code: true
+  can_modify_production_code: false
+  allowed_test_types: [unit, integration, API, e2e, mocks, regression]
+  bug_report_on_failed_automation: true
+  cannot_close_bug_without_qa_verification: true
+  cannot_change_scope: true
+  ci_test_changes_require_devops_approval: true

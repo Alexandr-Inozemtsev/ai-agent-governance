@@ -11,8 +11,22 @@
 - Security skills: security-review, prompt-injection-analysis, data-privacy, dependency-risk.
 - DevOps skills: Docker, CI/CD, deployment-pipeline, observability, rollback-planning.
 - QA skills: test-strategy, test-cases, defect-analysis, QA-gate.
+- Test automation skills: unit-test-automation, integration-test-automation, API-test-automation, e2e-test-automation, mocks-and-fixtures, regression-tests, test-data-management, flaky-test-analysis, CI-test-command-analysis, coverage-analysis.
 - Bug/defect skills: bug-reporting, bug-triage, regression-analysis, defect-verification.
 - Documentation skills: documentation, user-guide, runbook, changelog.
 - Trello/GitHub skills: card-creation, label-management, code-review, PR-risk-review.
 - Release skills: release-planning, release-gates, rollout, rollback, hotfix-flow.
 - Monetization skills: monetization-analysis, pricing-hypotheses, cost-modeling, tariff-analysis.
+
+## test_automation_skills
+
+- unit-test-automation
+- integration-test-automation
+- API-test-automation
+- e2e-test-automation
+- mocks-and-fixtures
+- regression-tests
+- test-data-management
+- flaky-test-analysis
+- CI-test-command-analysis
+- coverage-analysis

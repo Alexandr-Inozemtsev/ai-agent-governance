@@ -77,6 +77,18 @@ agents:
     can_change_dependencies: "conditional: only after ADR approval and security/license review"
     can_modify_code: "conditional: false by default; allowed only for architecture prototype task"
     can_finalize_backlog: false
+  ai-ui-ux-designer:
+    allowed_skills: [UX-design, UI-design, user-flow-design, screen-specification, UI-kit, interaction-states, accessibility-basics, design-handoff]
+    denied_skills: [production-code-editing, database-design, final-backlog, release-decision, Trello-board-mutation]
+    conditional_skills: [UX-scope-input-drafting]
+    allowed_artifacts: [user_flow, wireframe_spec, UI_state_spec, design_handoff, accessibility_notes]
+    denied_artifacts: [production_code_patch, db_migration, final_backlog, release_decision, Trello_card]
+    allowed_actions: [design_flows, specify_screens, define_UI_states, prepare_design_handoff]
+    blocked_actions: [modify_code, change_database, finalize_backlog, mutate_trello, approve_release]
+    can_modify_code: false
+    can_modify_trello: false
+    can_create_backlog: "conditional: UX draft only"
+    can_finalize_backlog: false
   ai-backend-developer:
     allowed_skills: [backend-analysis, backend-implementation, FastAPI, service-layer, API-implementation, backend-tests, LLM-client-integration, file-processing, retriever-implementation]
     denied_skills: [final-product-backlog, business-scope-definition, Trello-board-management, UI-visual-design, production-deploy]
@@ -172,6 +184,95 @@ agents:
     can_close_epics: false
     can_modify_code: false
     can_modify_trello: "conditional: bug cards only if project policy allows"
+  ai-test-automation-engineer:
+    allowed_skills:
+      - unit-test-automation
+      - integration-test-automation
+      - API-test-automation
+      - e2e-test-automation
+      - mocks-and-fixtures
+      - regression-tests
+      - test-data-management
+      - flaky-test-analysis
+      - CI-test-command-analysis
+      - coverage-analysis
+      - test-maintenance
+      - bug-reporting-from-failed-tests
+    denied_skills:
+      - product-scope-change
+      - final-backlog
+      - release-decision
+      - production-deploy
+      - trello-board-mutation
+      - architecture-decision
+      - security-approval
+      - QA-gate-final-approval
+      - bug-close-without-QA-verification
+      - database-migration-approval
+    conditional_skills:
+      - "modify-test-code: allowed only with approved task"
+      - "modify-test-infrastructure: allowed only with approved task"
+      - "update-CI-test-command: allowed only with DevOps/CI approval if CI config changes"
+      - "create-bug-report: allowed when automated test reveals defect"
+      - "modify-production-code: blocked by default, allowed only if explicitly routed as developer task by owner agent"
+    permissions:
+      can_modify_code: conditional
+      can_modify_test_code: true
+      can_modify_production_code: false
+      can_create_bug_reports: true
+      can_close_bugs: false
+      can_modify_trello: false
+      can_trigger_deploy: false
+      can_finalize_backlog: false
+      can_create_adr: false
+      can_create_bt: false
+      can_create_tz: false
+      can_change_dependencies: false
+      can_change_database: false
+      can_modify_ci_cd: "conditional only for test commands with ai-devops-engineer approval"
+      requires_orchestrator_approval: true
+      requires_qa_review: true
+      requires_release_manager_approval: false
+    allowed_artifacts:
+      - test_automation_plan
+      - unit_tests
+      - integration_tests
+      - API_tests
+      - e2e_tests
+      - mocks
+      - fixtures
+      - regression_suite
+      - test_results
+      - coverage_report
+      - flaky_test_report
+      - bug_report
+    denied_artifacts:
+      - final_backlog
+      - ADR_final
+      - BT
+      - TZ
+      - release_decision
+      - Trello_board_change
+      - production_deploy_plan
+    allowed_actions: [write_unit_tests, write_integration_tests, write_API_tests, write_e2e_tests, create_mocks, create_fixtures, run_tests, report_defects, analyze_coverage, analyze_flaky_tests]
+    blocked_actions: [product_scope_change, QA_gate_final_approval, release_decision, production_deploy, Trello_mutation, close_bug_without_QA_verification, change_dependencies, approve_database_migration]
+    can_modify_code: conditional
+    can_modify_test_code: true
+    can_modify_production_code: false
+    can_create_bug_reports: true
+    can_close_bugs: false
+    can_modify_trello: false
+    can_trigger_deploy: false
+    can_finalize_backlog: false
+    can_create_adr: false
+    can_create_bt: false
+    can_create_tz: false
+    can_change_dependencies: false
+    can_change_database: false
+    can_modify_ci_cd: "conditional: only test commands with ai-devops-engineer approval"
+    requires_orchestrator_approval: true
+    requires_qa_review: true
+    requires_release_manager_approval: false
   ai-code-reviewer:
     allowed_skills: [code-review, static-analysis, architecture-compliance-check, test-review, risk-review]
     denied_skills: [scope-change, feature-implementation, Trello-board-restructure]

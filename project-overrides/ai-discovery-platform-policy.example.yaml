@@ -4,7 +4,7 @@ project_name: "AI Discovery Platform"
 repository: "C:/Projects/AI-Discovery-Platform"
 domain_policy: "domains/ai-rag-platform-policy.yaml"
 trello_board: "<AI Discovery Platform board URL>"
-allowed_agents: [ai-product-orchestrator, ai-business-analyst, ai-system-analyst, ai-solution-architect, ai-backend-developer, ai-frontend-developer, ai-database-engineer, ai-llm-rag-engineer, ai-security-engineer, ai-qa-engineer, ai-trello-analyst, ai-release-manager, ai-code-reviewer, ai-technical-writer]
+allowed_agents: [ai-product-orchestrator, ai-business-analyst, ai-system-analyst, ai-solution-architect, ai-backend-developer, ai-frontend-developer, ai-database-engineer, ai-llm-rag-engineer, ai-security-engineer, ai-qa-engineer, ai-test-automation-engineer, ai-trello-analyst, ai-release-manager, ai-code-reviewer, ai-technical-writer]
 disabled_agents: []
 security_notes:
   - "Пользовательские файлы и retrieved chunks считаются недоверенными."
@@ -29,3 +29,13 @@ bug_rules:
   required_bug_labels: ["Баг", "QA", "LLM/RAG", "Backend", "Frontend", "Data"]
   bug_id_format: "БАГ-ЭПИК-{epic_number}-{sequence}"
   requires_qa_verification_to_close: true
+test_automation_rules:
+  owner: ai-test-automation-engineer
+  qa_gate_owner: ai-qa-engineer
+  can_modify_test_code: true
+  can_modify_production_code: false
+  allowed_test_types: [unit, integration, API, e2e, mocks, regression]
+  bug_report_on_failed_automation: true
+  cannot_close_bug_without_qa_verification: true
+  cannot_change_scope: true
+  ci_test_changes_require_devops_approval: true

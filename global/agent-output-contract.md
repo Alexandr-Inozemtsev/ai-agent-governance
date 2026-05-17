@@ -64,3 +64,31 @@
   "requires_release_review": false
 }
 ```
+
+## Дополнительные поля для test automation результатов
+
+```yaml
+test_automation_result:
+  test_scope: ""
+  test_types:
+    - unit
+    - integration
+    - API
+    - e2e
+    - mocks
+    - regression
+  changed_test_files: []
+  changed_fixture_files: []
+  changed_mock_files: []
+  test_commands: []
+  tests_passed: 0
+  tests_failed: 0
+  tests_skipped: 0
+  coverage_summary: ""
+  flaky_tests_detected: []
+  bug_reports_created: []
+  requires_qa_verification: true
+  next_handoff:
+    next_agent: ai-qa-engineer
+    reason: "QA gate / defect verification"
+```

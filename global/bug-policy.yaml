@@ -41,6 +41,26 @@ qa_engineer_permissions:
   can_propose_trello_bug_card: true
   can_block_QA_gate: true
   cannot_change_product_scope: true
+test_automation_engineer_rules:
+  can_create_bug_report_when_automated_test_reveals_defect: true
+  bug_report_requires_parent:
+    - epic
+    - task
+    - PR
+    - test_case
+  cannot_close_bug: true
+  bug_closure_requires_ai_qa_engineer_verification: true
+  flaky_failed_test_result: "Сначала создать flaky test report, а не product bug."
+  regression_failed_test_label_required: "Regression"
+  release_blocking_e2e_API_integration_bug_requires_release_manager_review: true
+  notes:
+    - "ai-test-automation-engineer может создавать bug report, если автоматизированный тест выявил дефект."
+    - "bug report от ai-test-automation-engineer должен иметь parent epic/task/PR/test case."
+    - "ai-test-automation-engineer не может закрывать bug."
+    - "Закрытие bug требует ai-qa-engineer verification."
+    - "Если failed test связан с flaky behavior, сначала создаётся flaky test report, а не product bug."
+    - "Если failed test выявляет regression, bug должен иметь label Regression."
+    - "Если bug найден в e2e/API/integration test и блокирует release, требуется ai-release-manager review."
 scope_change_rule:
   triggers:
     - new_feature

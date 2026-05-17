@@ -182,15 +182,26 @@ task_types:
     handoff_rules: "Блокеры идут orchestrator/release/security по типу."
     quality_gate_required: true
   testing:
-    owner_agent: ai-qa-engineer
-    contributor_agents: [ai-test-automation-engineer, ai-frontend-developer, ai-backend-developer]
+    owner_agent: ai-test-automation-engineer
+    contributor_agents: [ai-qa-engineer, ai-backend-developer, ai-frontend-developer, ai-devops-engineer]
     required_approvals: [ai-qa-engineer]
-    required_input_artifacts: [test_scope]
-    output_artifacts: [test_results, bug_reports]
-    allowed_actions: [run_tests, report_defects]
-    blocked_actions: [hide_failed_tests]
+    required_input_artifacts: [test_scope, acceptance_criteria, approved_task]
+    output_artifacts: [test_results, test_patch, regression_suite_update, bug_reports]
+    allowed_actions: [write_unit_tests, write_integration_tests, write_API_tests, write_e2e_tests, create_mocks, create_fixtures, run_tests, report_defects]
+    blocked_actions: [hide_failed_tests, close_bug_without_QA_verification, change_product_scope, modify_Trello, deploy]
     default_trello_list: "07 QA / проверка"
-    handoff_rules: "Failures become bug reports with parent."
+    handoff_rules: "Test failures become bug reports with parent epic/task. QA gate remains owned by ai-qa-engineer."
+    quality_gate_required: true
+  test_automation:
+    owner_agent: ai-test-automation-engineer
+    contributor_agents: [ai-qa-engineer, ai-backend-developer, ai-frontend-developer, ai-devops-engineer]
+    required_approvals: [ai-qa-engineer]
+    required_input_artifacts: [approved_task, test_scope, acceptance_criteria]
+    output_artifacts: [test_automation_plan, test_patch, test_results, coverage_report, regression_suite_update]
+    allowed_actions: [create_test_plan_draft, implement_automated_tests, update_test_fixtures, update_mocks, run_tests, report_defects]
+    blocked_actions: [product_scope_change, QA_gate_final_approval, release_decision, production_deploy, Trello_mutation]
+    default_trello_list: "07 QA / проверка"
+    handoff_rules: "После выполнения автотестов передать ai-qa-engineer для QA gate/verification."
     quality_gate_required: true
   documentation:
     owner_agent: ai-technical-writer

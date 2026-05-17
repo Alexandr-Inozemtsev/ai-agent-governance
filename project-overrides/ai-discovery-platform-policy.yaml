@@ -21,6 +21,7 @@ allowed_agents:
   - ai-security-engineer
   - ai-devops-engineer
   - ai-qa-engineer
+  - ai-test-automation-engineer
   - ai-code-reviewer
   - ai-release-manager
   - ai-technical-writer
@@ -147,6 +148,30 @@ bug_rules:
     - Critical
     - High
   bug_id_format: "БАГ-ЭПИК-{epic_number}-{sequence}"
+
+test_automation_rules:
+  owner: ai-test-automation-engineer
+  qa_gate_owner: ai-qa-engineer
+  can_modify_test_code: true
+  can_modify_production_code: false
+  allowed_test_types:
+    - unit
+    - integration
+    - API
+    - e2e
+    - mocks
+    - regression
+  bug_report_on_failed_automation: true
+  cannot_close_bug_without_qa_verification: true
+  cannot_change_scope: true
+  ci_test_changes_require_devops_approval: true
+  simple_retriever_tests_required:
+    - unit
+    - integration
+    - regression
+  notes:
+    - "Для AI Discovery Platform ai-test-automation-engineer отвечает за автотесты backend/frontend/API/e2e."
+    - "QA gate и закрытие багов остаются за ai-qa-engineer."
 
 trello_rules:
   trello_owner: ai-trello-analyst

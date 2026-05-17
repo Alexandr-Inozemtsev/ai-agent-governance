@@ -15,6 +15,10 @@ Governance не должен жить внутри product repo, потому ч
 - `global/bug-policy.yaml` — правила bug reports и Trello bug cards.
 - `project-overrides/project-policy-template.yaml` — шаблон подключения проекта.
 
+## Глобальные агенты
+
+Пакет включает 21 глобального агента, включая отдельного `ai-test-automation-engineer` для автотестов. `ai-test-automation-engineer` отвечает за unit, integration, API, e2e, mocks, fixtures, regression suites, flaky test analysis, CI test commands и coverage analysis. QA gate и bug verification остаются у `ai-qa-engineer`.
+
 ## Подключённые проекты
 
 | Проект | Repository | Domain policy | Project override | Статус |
@@ -48,7 +52,7 @@ Project Policy и Task Policy могут только ужесточать globa
 
 ## Bug policy
 
-QA может создавать bug reports. Trello bug card создается только с parent epic/task/PR/incident. Для плановой разработки основной parent — epic. Родительский epic должен видеть открытые баги в checklist `Баги / дефекты`. Epic нельзя закрыть при открытых P0/P1/Critical/High bugs. Bug нельзя закрыть без QA verification.
+QA может создавать bug reports. `ai-test-automation-engineer` тоже может создать bug report, если дефект выявлен автоматизированным тестом. Trello bug card создается только с parent epic/task/PR/incident. Для плановой разработки основной parent — epic. Родительский epic должен видеть открытые баги в checklist `Баги / дефекты`. Epic нельзя закрыть при открытых P0/P1/Critical/High bugs. Bug нельзя закрыть без QA verification.
 
 ## Soft и hard enforcement
 
